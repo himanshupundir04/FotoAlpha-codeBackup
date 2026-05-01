@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { UploadVideoContext } from "../Context/UploadVideoContext";
-import { PortfolioContext } from "../Context/PortfolioContext";
+// import { PortfolioContext } from "../Context/PortfolioContext";
 import { useParams } from "react-router-dom";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
@@ -18,7 +18,7 @@ function SyncVideos({ videoUploadMode, setVideoUploadMode }) {
     //  console.log("eventid", eventId)
     //  console.log("subeventid", subeventId)
 
-    const {status} = useContext(PortfolioContext)
+    // const {status} = useContext(PortfolioContext)
 
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({ total: 0 });

@@ -99,7 +99,7 @@ async function createWindow() {
     },
   });
 
-  Menu.setApplicationMenu(null);
+  // Menu.setApplicationMenu(null);
 
   const isDev = !app.isPackaged;
 

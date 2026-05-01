@@ -12,7 +12,7 @@ import React, { useContext, useEffect, useState } from "react";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import BoltIcon from "@mui/icons-material/Bolt";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import demo from "../../image/demo.jpg";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -24,6 +24,9 @@ import { PortfolioEventContext } from "../Context/PortfolioEventContext"
 
 const baseUrl = process.env.REACT_APP_BASE_URL;
 function EventLists() {
+   const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const type = params.get("type");
   const [loading, setLoading] = useState(false);
   const [permission, setPermission] = useState(false);
   const navigate = useNavigate();
@@ -31,7 +34,7 @@ function EventLists() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [searchText, setSearchText] = useState("");
-  const [status, setStatus] = useState(""); 
+  const [status, setStatus] = useState(type || ""); 
   const { setPortfolioEvent } = useContext(PortfolioEventContext); 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -174,7 +177,7 @@ function EventLists() {
   };
 
   const data = events;
-  console.log(events);
+  // console.log(events);
 
   // Pagination logic
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -501,8 +504,19 @@ function EventLists() {
                       Search
                     </button>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <div className="relative flex w-full md:w-max md:min-w-[220px]">
+                  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div className="px-2 py-1.5 border w-full md:w-max border-slate-200 dark:border-slate-600 rounded-full bg-white">
+                      <select className="text-slate-600 w-full md:w-max"
+                       value={status}
+                        onChange={(e) => setStatus(e.target.value)}>
+                        <option value="">All</option>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    <div className="relative flex w-full md:w-max md:w-[120px]">
                       <div className="flex items-center gap-2 w-full px-4 py-1.5 border border-slate-200 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-600 focus-within:border-[#0b8599] transition-colors shadow-sm">
                         <input
                           type="text"

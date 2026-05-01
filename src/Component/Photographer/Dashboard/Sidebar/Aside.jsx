@@ -8,7 +8,7 @@ import { Divider, Tooltip } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PhotoLibraryIcon from "@mui/icons-material/PhotoLibrary";
 import GroupsIcon from "@mui/icons-material/Groups";
-import logo from "../../../image/fulllogo.jpg";
+import logo from "../../../image/Newlogo.png";
 import logoclose from "../../../image/bg-removed.png";
 import BoltIcon from "@mui/icons-material/Bolt";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
@@ -58,11 +58,10 @@ function Aside({ setIsOpen, isOpen }) {
     <>
       <div className="h-screen flex flex-col relative text-start">
         <nav
-          className={`lg:flex flex-col space-y-4 relative z-10 bg-white dark:bg-slate-900 ${
-            !isOpen ? "md:max-h-full max-h-[520px]" : "max-h-full"
-          }`}
+          className={`lg:flex flex-col space-y-4 relative z-10 bg-white dark:bg-slate-900 ${!isOpen ? "md:max-h-full max-h-[520px]" : "max-h-full"
+            }`}
         >
-          <div className=" title flex justify-center py-3 gap-4 items-center border-solid border-b-2 border-slate-100 dark:border-slate-800 dark:text-white">
+          <div className=" title flex justify-center py-2 gap-4 items-center border-solid border-b-2 border-slate-100 dark:border-slate-800 dark:text-white">
             {!isOpen ? (
               <img src={logo} alt="logo" className="w-[80px] lg:w-[145px]" />
             ) : (
@@ -70,14 +69,13 @@ function Aside({ setIsOpen, isOpen }) {
             )}
           </div>
           <div className="px-3 md:pt-2 h-[100%] overflow-y-auto flex-1">
-           <Link
+            <Link
               to="upload_photos"
               className={`flex items-center space-x-2 p-2 mb-1 rounded font-normal
-               no-underline ${
-                isActive("upload_photos")
+               no-underline ${isActive("upload_photos")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -92,15 +90,14 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="dashboard"
-              className={`flex items-center space-x-2 p-2 rounded font-normal no-underline ${
-                isActive("dashboard")
+              className={`flex items-center space-x-2 p-2 rounded font-normal no-underline ${isActive("dashboard")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
-                   setIsOpen(false);
+                  setIsOpen(false);
                 }
               }}
             >
@@ -110,15 +107,14 @@ function Aside({ setIsOpen, isOpen }) {
             <Link
               to="public_portfolio"
               className={`flex items-center space-x-2 p-2 rounded font-normal no-underline  
-                ${
-                  isActive("public_portfolio")
-                    ? "bg-blue text-white"
-                    : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
+                ${isActive("public_portfolio")
+                  ? "bg-blue text-white"
+                  : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
                 }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
-                   setIsOpen(false);;
+                  setIsOpen(false);;
                 }
               }}
             >
@@ -128,13 +124,12 @@ function Aside({ setIsOpen, isOpen }) {
 
             <div>
               <button
-                className={`w-full flex items-center justify-between p-2 rounded font-normal no-underline ${
-                  location.pathname.includes("/photographer/event") ||
-                  location.pathname.includes("/photographer/events_list") ||
-                  location.pathname.includes("/photographer/create_event")
+                className={`w-full flex items-center justify-between p-2 rounded font-normal no-underline ${location.pathname.includes("/photographer/event") ||
+                    location.pathname.includes("/photographer/events_list") ||
+                    location.pathname.includes("/photographer/create_event")
                     ? "bg-blue text-white"
                     : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-                }`}
+                  }`}
                 onClick={() => setIsEventOpen(!isEventOpen)}
               >
                 <div className="flex items-center space-x-2">
@@ -151,11 +146,10 @@ function Aside({ setIsOpen, isOpen }) {
                 <div className={` ${!isOpen ? "ml-2" : "ml-0"}`}>
                   <Link
                     to="events_category"
-                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${
-                      isActive("events_category")
+                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${isActive("events_category")
                         ? "text-blue"
                         : "text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-                    }`}
+                      }`}
                     onClick={() => {
                       if (window.innerWidth < 1024) {
                         // ✅ only close on mobile (Tailwind md breakpoint)
@@ -171,11 +165,10 @@ function Aside({ setIsOpen, isOpen }) {
                   </Link>
                   <Link
                     to="create_event"
-                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${
-                      isActive("create_event")
+                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${isActive("create_event")
                         ? "text-blue"
                         : "text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-                    }`}
+                      }`}
                     onClick={() => {
                       if (window.innerWidth < 1024) {
                         // ✅ only close on mobile (Tailwind md breakpoint)
@@ -191,11 +184,10 @@ function Aside({ setIsOpen, isOpen }) {
                   </Link>
                   <Link
                     to="events_list"
-                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${
-                      isActive("events_list")
+                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${isActive("events_list")
                         ? "text-blue"
                         : "text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-                    }`}
+                      }`}
                     onClick={() => {
                       if (window.innerWidth < 1024) {
                         // ✅ only close on mobile (Tailwind md breakpoint)
@@ -211,11 +203,10 @@ function Aside({ setIsOpen, isOpen }) {
                   </Link>
                   <Link
                     to="print_orders"
-                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${
-                      isActive("print_orders")
+                    className={`flex items-center space-x-1 text-start p-2 rounded  font-normal no-underline ${isActive("print_orders")
                         ? "text-blue"
                         : "text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-                    }`}
+                      }`}
                     onClick={() => {
                       if (window.innerWidth < 1024) {
                         // ✅ only close on mobile (Tailwind md breakpoint)
@@ -249,7 +240,7 @@ function Aside({ setIsOpen, isOpen }) {
               <PhotoLibraryIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && <span>Album</span>}
             </Link> */}
-           
+
             {(!isOpen || window.innerWidth < 1024) && (
               <p className="font-medium text-slate-700 my-2 dark:text-white">
                 Tools & Support
@@ -258,11 +249,10 @@ function Aside({ setIsOpen, isOpen }) {
             <Divider sx={{ color: "#1e293b" }} />
             <Link
               to="team"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("team")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("team")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -275,11 +265,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="calendar"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("calendar")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("calendar")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -294,11 +283,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="feedback"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("feedback")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("feedback")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -313,11 +301,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="billing"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("billing")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("billing")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -332,11 +319,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="coins"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("coins")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("coins")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -351,11 +337,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="referrals"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("referrals")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("referrals")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -370,11 +355,10 @@ function Aside({ setIsOpen, isOpen }) {
             </Link>
             <Link
               to="settings"
-              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${
-                isActive("settings")
+              className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("settings")
                   ? "bg-blue text-white"
                   : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
-              }`}
+                }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
                   // ✅ only close on mobile (Tailwind md breakpoint)
@@ -385,24 +369,45 @@ function Aside({ setIsOpen, isOpen }) {
               <SettingsIcon sx={{ fontSize: 20 }} />
               {(!isOpen || window.innerWidth < 1024) && <span>Settings</span>}
             </Link>
-             {(!isOpen || window.innerWidth < 1024) && (
-            <div
-              className={`flex items-center justify-between p-2 rounded font-normal cursor-not-allowed opacity-60 ${
-                "text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30"
-              }`}
-              title="This feature is coming soon"
-            >
-             <Tooltip title="Coming soon">
-                <div className="flex items-center text-sm space-x-2">
-                  <AddPhotoAlternateIcon sx={{ fontSize: 22 }} />
-                  {(!isOpen || window.innerWidth < 1024) && (
-                    <span>Export Photos</span>
-                  )}
+            {(!isOpen || window.innerWidth < 1024) && (
+              <>
+                <div
+                  className={`flex items-center justify-between p-2 rounded font-normal cursor-not-allowed  ${"text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30"
+                    }`}
+                  title="This feature is coming soon"
+                >
+                  <Tooltip title="Coming soon">
+                    <div className="flex items-center text-sm space-x-2">
+                      <AddPhotoAlternateIcon sx={{ fontSize: 20 }} />
+                      {(!isOpen || window.innerWidth < 1024) && (
+                        <>
+                          <span className="text-xs">Export Photos</span>
+                          <span className="text-green-600 text-xs">Coming Soon</span>
+                        </>
+                      )}
+                    </div>
+                  </Tooltip>
                 </div>
-              </Tooltip>
-            </div>
-             )}
-            
+                <div
+                  className={`flex items-center justify-between p-2 rounded font-normal cursor-not-allowed  ${"text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/30"
+                    }`}
+                  title="This feature is coming soon"
+                >
+                  <Tooltip title="Coming soon">
+                    <div className="flex items-center text-sm space-x-2">
+                      <PhotoLibraryIcon sx={{ fontSize: 20 }} />
+                      {(!isOpen || window.innerWidth < 1024) && (
+                        <>
+                          <span className="text-xs">Ai Album</span>
+                          <span className="text-green-600 text-xs">Coming Soon</span>
+                        </>
+                      )}
+                    </div>
+                  </Tooltip>
+                </div>
+              </>
+            )}
+
           </div>
         </nav>
       </div>

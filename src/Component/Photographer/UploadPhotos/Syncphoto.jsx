@@ -15,6 +15,9 @@ function SyncPhotos() {
 
   const { uploadVideoState, updateUploadVideoState, videoStatus } =
     useContext(UploadVideoContext);
+const [open, setOpen] = useState(false);
+  const [videoUploadMode, setVideoUploadMode] = useState(false);
+
 
   const handleStart = async () => {
     const selected = await window.electronAPI.selectFolder();
@@ -60,7 +63,18 @@ function SyncPhotos() {
         </div>
       )}
       <div className="flex justify-center items-center my-5 gap-4">
-        <button
+         <button
+              onClick={() => setOpen(true)}
+              className={`px-6 py-3 bg-blue text-white rounded-2xl shadow-lg hover:bg-blue-700 transition ${
+              status === "loading" || videoStatus === "loading"
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-blueHover"
+            }`}
+            disabled={status === "loading" || videoStatus === "loading"}
+           >
+             {status === "loading" || videoStatus === "loading" ? "Uploading..." : "Upload Folder"}
+            </button>
+        {/* <button
           className={`bg-blue text-white py-2 px-3 rounded font-semibold transition-colors ${
             status === "loading" || videoStatus === "loading"
               ? "opacity-50 cursor-not-allowed"
@@ -70,7 +84,7 @@ function SyncPhotos() {
           disabled={status === "loading" || videoStatus === "loading"}
         >
           <ImageIcon /> Select Image Folder
-        </button>
+        </button> */}
 
         {/* <button
           className={`bg-blue text-white py-2 px-3 rounded font-semibold transition-colors ${
@@ -84,6 +98,51 @@ function SyncPhotos() {
           <VideocamIcon /> Select Video Folder
         </button> */}
       </div>
+
+       {open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+          <div className="bg-white rounded-3xl p-6 w-80 shadow-2xl relative animate-fadeIn">
+
+            {/* Close Button */}
+            <button
+              onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-xl font-semibold text-center mb-6">
+              Upload File
+            </h2>
+
+            {/* Options */}
+            <div className="flex flex-col gap-4">
+
+              {/* Upload Image */}
+              <button className="flex items-center justify-center gap-3 border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-purple-500 hover:bg-blue-purple-50 transition"
+                 onClick={() => {
+                  handleStart();
+                  setOpen(false);
+                 }}
+              >
+                📷 Upload Image
+
+              </button>
+
+              {/* Upload Video */}
+              <button className="flex items-center justify-center gap-3 border-2 border-dashed border-gray-300 rounded-xl p-4 cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition"
+                onClick={() => {
+                  setOpen(false);           // close modal
+                 handleSelectFolder()  // trigger SyncVideos
+                }}
+              >
+                🎥 Upload Video
+
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

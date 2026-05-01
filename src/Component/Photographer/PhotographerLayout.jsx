@@ -511,7 +511,7 @@ function PortfolioLayout() {
                   </div>
                 ))}
               <p className="text-xs text-blueHover">
-                Uploading large Images works best with 8 or more CPU
+                Uploading large Images/Videos works best with 8 or more CPU
                 cores and a stable broadband connection.
               </p>{" "}
             </div>

@@ -61,6 +61,7 @@ function Main() {
   });
   const [billablesLoading, setBillablesLoading] = useState(false);
   const { notification } = useContext(PhotographerEventContext);
+   const [allevent, setAllevent] = useState()
 
   // console.log(notification)
 
@@ -82,6 +83,7 @@ function Main() {
       .then((response) => {
         setDataload(false);
         setSummary(response.data);
+        setAllevent(response.data.eventStatusStats)
         setRecentevent(response.data.recentUpcomingEvents);
         setAudit(response.data.recentAuditLogs);
         setNextevents(response?.data?.nextSevenDaysEvents);
@@ -294,30 +296,29 @@ function Main() {
     );
   };
 
-  const photoLifecycleData = [
+ const photoLifecycleData = [
     {
-      name: "Total Uploaded",
-      value: photoGraph?.totalUploaded || 0,
+      name: "Upcoming Events",
+      status:"Upcoming",
+      value: allevent?.upcoming || 0,
       color: "#d303fd",
     },
     {
-      name: "Selection Complete",
-      value: photoGraph?.selectionComplete || 0,
+      name: "Completed Events",
+      status: "Completed",
+      value: allevent?.completed || 0,
       color: "#22c55e",
     },
     {
-      name: "Selection Pending",
-      value: photoGraph?.selectionPending || 0,
+      name: "Ongoing Events",
+      status: "Ongoing",
+      value: allevent?.ongoing || 0,
       color: "#f59e0b",
     },
     {
-      name: "Not Viewed By Client",
-      value: photoGraph?.notViewedByClient || 0,
-      color: "#3b82f6",
-    },
-    {
-      name: "No Action (30 Days)",
-      value: photoGraph?.noAction30Days || 0,
+      name: "cancelled Events",
+      status: "Cancelled",
+      value: allevent?.cancelled || 0,
       color: "#ef4444",
     },
   ];
@@ -478,11 +479,11 @@ function Main() {
               <div className="w-full bg-white rounded-md p-3 dark:bg-slate-800">
                 <div className="flex justify-between items-center mb-2">
                   <h2 className="text-slate-700 font-medium text-lg dark:text-white">
-                    Photo Lifecycle
+                    Event Lifecycle
                   </h2>
-                  <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold dark:bg-blue-900 dark:text-blue-200">
+                  {/* <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold dark:bg-blue-900 dark:text-blue-200">
                     Total Uploaded: {photoGraph?.totalUploaded || 0}
-                  </span>
+                  </span> */}
                 </div>
                 {(photoGraph?.totalUploaded || 0) === 0 ? (
                   <div className="flex flex-col items-center justify-center h-48 text-center">
@@ -491,14 +492,14 @@ function Main() {
                       className="text-gray-300 dark:text-slate-600 mb-2"
                     />
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
-                      No Photos Yet
+                      No Event Yet
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-500 mb-3">
-                      Upload photos to track lifecycle stats
+                      Add Event to track lifecycle stats
                     </p>
-                    <Link to="/photographer/upload_photo">
+                    <Link to="/photographer/create_event">
                       <button className="bg-blue text-white py-1 px-3 rounded text-xs font-semibold hover:bg-blue-700 dark:bg-blue-600">
-                        Upload Photo
+                        Add Event
                       </button>
                     </Link>
                   </div>
@@ -506,20 +507,24 @@ function Main() {
                   <div className="space-y-3">
                     {photoLifecycleData.length > 0 ? (
                       <div>
-                        <Box sx={{ width: "100%", height: 270 }}>
+                        <Box sx={{ width: "100%", height: 400 }}>
                           <ResponsiveContainer width="100%" height="100%">
                             <RechartsPieChart>
                               <RechartsPie
                                 data={photoLifecycleData}
                                 cx="50%"
                                 cy="45%"
-                                innerRadius={45}
-                                outerRadius={85}
+                                innerRadius={60}
+                                outerRadius={100}
                                 paddingAngle={2}
                                 dataKey="value"
                                 nameKey="name"
                                 labelLine={false}
                                 label={({ value }) => value}
+                                onClick={(data) => {
+                                  console.log("Clicked:", data);
+                                  navigate(`/photographer/events_list?type=${data?.status}`);
+                                }}
                               >
                                 {photoLifecycleData.map((entry) => (
                                   <Cell
@@ -532,11 +537,11 @@ function Main() {
                               <Tooltip
                                 formatter={(value, name) => [value, name]}
                               />
-                              <Legend
+                              {/* <Legend
                                 verticalAlign="bottom"
                                 iconType="circle"
                                 wrapperStyle={{ fontSize: 11 }}
-                              />
+                              /> */}
                             </RechartsPieChart>
                           </ResponsiveContainer>
                         </Box>

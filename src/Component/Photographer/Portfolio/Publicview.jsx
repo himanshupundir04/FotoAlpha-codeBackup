@@ -23,8 +23,10 @@ const baseURL = process.env.REACT_APP_BASE_URL;
 function Publicview() {
   const [profilePreview, setProfilePreview] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
+  const [coverMobilePreview, setCoverMobilePreview] = useState(null);
   const [portfolio, setPortfolio] = useState({});
   const [photos, setPhotos] = useState([]);
+  const [folderphotos, setFolderPhotos] = useState([]);
   const [view, setView] = useState(false);
   const [zoomImg, setZoomImg] = useState(null);
   const [zoomIndex, setZoomIndex] = useState(null);
@@ -56,7 +58,7 @@ function Publicview() {
   const [visibleCount, setVisibleCount] = useState(6);
   const [showAll, setShowAll] = useState(false);
   const displayedFolders = showAll ? folders : folders?.slice(0, 2);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState(folders[0]?.name);
   const scrollRef = useRef(null);
   const [showFade, setShowFade] = useState(true);
 
@@ -67,6 +69,8 @@ function Publicview() {
       setShowFade(scrollLeft + clientWidth < scrollWidth - 10);
     }
   };
+
+  console.log(filter, "filter");
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -88,6 +92,7 @@ function Publicview() {
         setPortfolio(response.data.data);
         setProfilePreview(response.data.data.profileImageSignedUrl);
         setCoverPreview(response.data.data.coverImageSignedUrl);
+        setCoverMobilePreview(response.data.data.coverMobileSignedUrl);
         // console.log(response.data.data);
       })
       .catch((error) => {
@@ -98,16 +103,18 @@ function Publicview() {
   // Auto-fetch on filter change
   useEffect(() => {
     // setLoadingFilter(true);
-    setPhotos([]);
+    // setPhotos([]);
     setCurrentPage(1);
     setImageLoaded({});
 
     if (filter === "All" || !selectedFolder) {
       // Fetch all photos
+      // console.log("filter",filter)
       fetchPhotos(1, 20);
     } else {
       // Fetch folder photos
       fetchPhotosFolder(selectedFolder);
+      // console.log(selectedFolder);
     }
   }, [filter, selectedFolder, portfolio]);
 
@@ -137,8 +144,12 @@ function Publicview() {
         },
       })
       .then((response) => {
-        // console.log(response.data);
-        setFolders(response.data);
+        const data = response.data;
+        setFolders(data);
+        if (data.length > 0) {
+          setSelectedFolder(data[0]._id);
+          setFilter(data[0].name);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -217,9 +228,11 @@ function Publicview() {
         setLoadingFolderPhotos(false);
 
         if (page === 1) {
-          setPhotos(newPhotos);
+          // setPhotos(newPhotos);
+          setFolderPhotos(newPhotos);
         } else {
-          setPhotos((prev) => [...prev, ...newPhotos]);
+          // setPhotos((prev) => [...prev, ...newPhotos]);
+          setFolderPhotos((prev) => [...prev, ...newPhotos]);
         }
         // Optional: Check if more photos are available
         if (newPhotos.length < 10) {
@@ -309,9 +322,8 @@ function Publicview() {
               {portfolio?.biography ? (
                 <div className="text-slate-700 text-start">
                   <p
-                    className={`capitalize dark:text-white ${
-                      expanded ? "line-clamp-none" : "line-clamp-2"
-                    }`}
+                    className={`capitalize dark:text-white ${expanded ? "line-clamp-none" : "line-clamp-2"
+                      }`}
                   >
                     {portfolio?.biography}
                   </p>
@@ -357,11 +369,10 @@ function Publicview() {
                         folders.map((data) => (
                           <li
                             key={data._id}
-                            className={`capitalize cursor-pointer border border-slate-300 rounded px-2 py-1 dark:text-white ${
-                              selectedFolder === data._id
+                            className={`capitalize cursor-pointer border border-slate-300 rounded px-2 py-1 dark:text-white ${selectedFolder === data._id
                                 ? "bg-blue text-white"
                                 : ""
-                            }`}
+                              }`}
                             onClick={() => setSelectedFolder(data._id)} // update selected folder
                           >
                             {data.name}
@@ -379,15 +390,15 @@ function Publicview() {
                             <div
                               key={folder._id}
                               className={`group text-center md:h-44 h-32 relative cursor-pointer rounded ease-in-out duration-500 overflow-hidden
-                              ${
-                                isSelected
+                              ${isSelected
                                   ? "scale-105 border-2 border-blue"
                                   : "hover:scale-105"
-                              }`}
+                                }`}
                               onClick={() => {
                                 setOpenfolder(true);
                                 fetchPhotosFolder(folder._id, images);
                                 setSelectedFolder(folder._id); // highlight on folder click too
+                                setFilter(folder.name); // Fix: Update folder name display
                               }}
                               onMouseEnter={() =>
                                 handleMouseEnter(folder._id, images.length)
@@ -397,9 +408,8 @@ function Publicview() {
                               <img
                                 src={images[currentIndex]?.signedUrl || demo}
                                 alt="album"
-                                className={`absolute top-0 left-0 w-full md:h-44 h-32 object-cover rounded border border-slate-300 transition-all duration-500 filter grayscale hover:grayscale-0 ${
-                                  isSelected ? "grayscale-0" : ""
-                                }`}
+                                className={`absolute top-0 left-0 w-full md:h-44 h-32 object-cover rounded border border-slate-300 transition-all duration-500 filter grayscale hover:grayscale-0 ${isSelected ? "grayscale-0" : ""
+                                  }`}
                               />
                               <div className="w-full m-auto flex justify-center">
                                 <button className="absolute bottom-2 font-normal bg-black/50 text-lg w-full h-max text-white capitalize">
@@ -510,7 +520,7 @@ function Publicview() {
       setCurrentIndex((prev) => prev - 1);
     }
   };
-
+  const dataToShow = filter === "All" ? photos : folderphotos;
   return (
     <>
       <style>
@@ -565,7 +575,7 @@ function Publicview() {
       <div className="min-h-screen bg-gray-50">
         <section className="relative">
           {/* Cover Image */}
-          <div className="relative w-full h-[80vh] md:h-[300px] bg-gray-300 rounded overflow-hidden">
+          <div className="relative w-full bg-gray-300 rounded overflow-hidden">
             <div
               className="absolute bg-white top-5 right-5 p-1 px-2 md:px-4 rounded-lg cursor-pointer dark:bg-slate-800"
               onClick={() => navigate("/photographer/manage_portfolio")}
@@ -577,7 +587,13 @@ function Publicview() {
             <img
               src={coverPreview || cover}
               alt="cover"
-              className="w-full h-full object-cover bg-slate-100"
+              className="w-full h-[80vh] md:h-full object-cover bg-slate-100 hidden md:block"
+              loading="lazy"
+            />
+            <img
+              src={coverMobilePreview || coverPreview || cover}
+              alt="cover mobile"
+              className="w-full h-full object-cover bg-slate-100 md:hidden block aspect-[4/5]"
               loading="lazy"
             />
             <button
@@ -598,92 +614,26 @@ function Publicview() {
             <div className="flex flex-col lg:flex-row gap-12">
               {/* Left Section: Featured Albums */}
               <div className="flex-1">
-                 {folders.length !== 0 && (
+                {folders.length !== 0 && (
                   <>
-                <div className="flex justify-between items-end border-b border-slate-100 pb-4 mb-8">
-                  <h2 className="text-xl italic text-[#1A1C1C]">
-                    Featured Albums
-                  </h2>
-                  {folders && folders.length > 2 && (
-                    <button
-                      onClick={() => setShowAll((prev) => !prev)}
-                      className="text-xs block md:hidden tracking-widest uppercase text-slate-500 hover:text-black transition-colors"
-                    >
-                      {showAll ? "View Less Albums" : "View All Albums"}
-                    </button>
-                  )}
-                </div>
-                <div className="grid block md:hidden grid-cols-1 md:grid-cols-2 gap-4">
-                  {folders &&
-                    displayedFolders.map((folder) => {
-                      const isSelected = folder._id === selectedFolder; // highlight if selected
-                      const images = folder?.randomPhotos || [];
-                      const currentIndex = hoverIndex[folder._id] || 0;
-
-                      return (
-                        <div
-                          key={folder._id}
-                          className="group cursor-pointer"
-                          // Setting the outer container to the fixed width ensures the title also stays within bounds
-
-                          onClick={() => {
-                            setOpenfolder(true);
-                            fetchPhotosFolder(folder._id, images);
-                            setSelectedFolder(folder._id);
-                          }}
-                          onMouseEnter={() =>
-                            handleMouseEnter(folder._id, images.length)
-                          }
-                          onMouseLeave={() => handleMouseLeave(folder._id)}
+                    <div className="flex justify-between items-end border-b border-slate-100 pb-4 mb-8">
+                      <h2 className="text-3xl italic text-[#1A1C1C]">
+                        Featured Albums
+                      </h2>
+                      { }
+                      {folders && folders.length > 2 && (
+                        <button
+                          onClick={() => setShowAll((prev) => !prev)}
+                          className="text-xs block md:hidden tracking-widest uppercase text-slate-500 hover:text-black transition-colors"
                         >
-                          <div
-                            className={`relative w-full overflow-hidden bg-slate-100 mb-4 transition-all duration-300 
-                                            ${isSelected ? "scale-105 border-2 border-teal-600" : "hover:scale-105"}
-                                          `}
-                            // Applying fixed width and height here
-                            style={{ height: "400px" }}
-                          >
-                            <img
-                              src={images[currentIndex]?.signedUrl || demo}
-                              alt="album"
-                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                          </div>
-                          <h3 className="text-xl font-medium capitalize">
-                            {folder?.name}
-                          </h3>
-                        </div>
-                      );
-                    })}
-                </div>
+                          {showAll ? "View Less Albums" : "View All Albums"}
+                        </button>
+                      )}
+                    </div>
 
-                <div className="relative hidden md:block w-full max-w-2xl mx-auto ">
-                  {/* LEFT BUTTON */}
-                  <button
-                    onClick={handlePrev}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/50 shadow-md p-1 rounded-full"
-                  >
-                    <ChevronLeftIcon />
-                  </button>
-
-                  {/* RIGHT BUTTON */}
-                  <button
-                    onClick={handleNext}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/50 shadow-md p-1 rounded-full"
-                  >
-                    <ChevronRightIcon />
-                  </button>
-                  {/* Scrollable Container */}
-                  <div className="overflow-hidden">
-                    {/* SLIDER TRACK */}
-                    <div
-                      className="flex gap-4 transition-transform duration-500"
-                      style={{
-                        transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-                      }}
-                    >
+                    <div className="grid block md:hidden grid-cols-1 md:grid-cols-2 gap-4">
                       {folders &&
-                        folders.map((folder) => {
+                        displayedFolders.map((folder) => {
                           const isSelected = folder._id === selectedFolder; // highlight if selected
                           const images = folder?.randomPhotos || [];
                           const currentIndex = hoverIndex[folder._id] || 0;
@@ -691,28 +641,26 @@ function Publicview() {
                           return (
                             <div
                               key={folder._id}
-                              className="group cursor-pointer w-1/2 h-[450px] flex-shrink-0"
+                              className="group cursor-pointer"
                               // Setting the outer container to the fixed width ensures the title also stays within bounds
 
                               onClick={() => {
                                 setOpenfolder(true);
-                                fetchPhotosFolder(folder._id);
+                                fetchPhotosFolder(folder._id, images);
                                 setSelectedFolder(folder._id);
+                                setFilter(folder?.name);
                               }}
                               onMouseEnter={() =>
                                 handleMouseEnter(folder._id, images.length)
                               }
                               onMouseLeave={() => handleMouseLeave(folder._id)}
                             >
-                              {/* <div
-                              className={`relative w-full aspect-square overflow-hidden bg-slate-100 transition-all duration-300 
-                                  ${isSelected ? "scale-105 border-2 border-teal-600" : "hover:scale-105"}
-                                `}
-                            > */}
                               <div
-                                className={`relative w-full h-[400px] aspect-square overflow-hidden bg-slate-100 transition-all duration-300 
-                                  hover:scale-105}
-                                `}
+                                className={`relative rounded-xl w-full overflow-hidden bg-slate-100 mb-4 transition-all duration-300 
+                                            ${isSelected ? "scale-105 border-2 border-teal-600" : "hover:scale-105"}
+                                          `}
+                                // Applying fixed width and height here
+                                style={{ height: "400px" }}
                               >
                                 <img
                                   src={images[currentIndex]?.signedUrl || demo}
@@ -720,119 +668,204 @@ function Publicview() {
                                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
                               </div>
-                              <h3 className="text-xl mt-2 font-medium capitalize">
+                              <h3 className="text-xl font-medium capitalize">
                                 {folder?.name}
                               </h3>
                             </div>
                           );
                         })}
                     </div>
-                  </div>
 
-                  {/* The Faded Overlay Effect */}
-                  {showFade && (
-                    <div className="absolute top-0 right-0 h-full w-1/3 pointer-events-none bg-gradient-to-l from-white/90 via-white/40 to-transparent transition-opacity duration-300" />
-                  )}
-                </div>
-                </>
-                 )}
+                    <div className="relative hidden md:block w-full max-w-2xl mx-auto ">
+                      {/* LEFT BUTTON */}
+                      <button
+                        onClick={handlePrev}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/50 shadow-md p-1 rounded-full"
+                      >
+                        <ChevronLeftIcon />
+                      </button>
+
+                      {/* RIGHT BUTTON */}
+                      <button
+                        onClick={handleNext}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/50 shadow-md p-1 rounded-full"
+                      >
+                        <ChevronRightIcon />
+                      </button>
+                      {/* Scrollable Container */}
+                      <div className="overflow-hidden">
+                        {/* SLIDER TRACK */}
+                        <div
+                          className="flex gap-4 transition-transform duration-500"
+                          style={{
+                            transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+                          }}
+                        >
+                          {folders &&
+                            folders.map((folder) => {
+                              const isSelected = folder._id === selectedFolder; // highlight if selected
+                              const images = folder?.randomPhotos || [];
+                              const currentIndex = hoverIndex[folder._id] || 0;
+
+                              return (
+                                <div
+                                  key={folder._id}
+                                  className="group cursor-pointer w-1/2 h-[450px] flex-shrink-0"
+                                  // Setting the outer container to the fixed width ensures the title also stays within bounds
+
+                                  onClick={() => {
+                                    setOpenfolder(true);
+                                    fetchPhotosFolder(folder._id);
+                                    setSelectedFolder(folder._id);
+                                    setFilter(folder.name); // Fix: Update folder name display
+                                  }}
+                                  onMouseEnter={() =>
+                                    handleMouseEnter(folder._id, images.length)
+                                  }
+                                  onMouseLeave={() =>
+                                    handleMouseLeave(folder._id)
+                                  }
+                                >
+                                  {/* <div
+                              className={`relative w-full aspect-square overflow-hidden bg-slate-100 transition-all duration-300 
+                                  ${isSelected ? "scale-105 border-2 border-teal-600" : "hover:scale-105"}
+                                `}
+                            > */}
+                                  <div
+                                    className={`relative rounded-xl w-full h-[400px] aspect-square overflow-hidden bg-slate-100 transition-all duration-300 
+                                  hover:scale-105}
+                                `}
+                                  >
+                                    <img
+                                      src={
+                                        images[currentIndex]?.signedUrl || demo
+                                      }
+                                      alt="album"
+                                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                  </div>
+                                  <h3 className="text-xl mt-2 font-medium capitalize">
+                                    {folder?.name}
+                                  </h3>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </div>
+
+                      {/* The Faded Overlay Effect */}
+                      {showFade && (
+                        <div className="absolute top-0 right-0 h-full w-1/3 pointer-events-none bg-gradient-to-l from-white/90 via-white/40 to-transparent transition-opacity duration-300" />
+                      )}
+                    </div>
+                  </>
+                )}
 
                 <div className="flex flex-col lg:flex-row gap-12 mt-12">
                   {/* Left Column: Gallery Selection */}
                   <div className="flex-1">
-                    {photos.length !== 0 ? (
+                    {/* Header & Filter */}
+                    {photos.length !== 0 || folders.length !== 0 ? (
                       <>
-                    <div className="flex gap-4 sm:flex-row sm:items-baseline justify-between border-b border-slate-100 pb-4 mb-8">
-                      <h2 className="text-xl italic text-[#1A1C1C] mt-4">
-                        Gallery
-                      </h2>
-                      <div className="flex overflow-auto gap-6 mt-4 sm:mt-0 text-[10px] uppercase tracking-widest font-sans font-bold">
-                        <button
-                          onClick={() => {
-                            setFilter("All");
-                            setSelectedFolder(null);
-                          }}
-                          className={`${filter === "All" ? "text-teal-600 border-b border-teal-600" : "text-slate-400 hover:text-black"} transition-all pb-1`}
-                        >
-                          All
-                        </button>
-                        {folders &&
-                          folders.map((folder) => {
-                            const handleFilterClick = () => {
-                              setFilter(folder.name);
-                              setSelectedFolder(folder._id);
-                            };
-                            return (
+                        <div className="flex gap-4 sm:flex-row sm:items-baseline justify-between border-b border-slate-100 pb-4 mb-8">
+                          <h2 className="text-3xl italic text-[#1A1C1C] mt-4">
+                            Gallery
+                          </h2>
+                          <div className="flex overflow-auto gap-6 mt-4 sm:mt-0 text-[10px] uppercase tracking-widest font-sans font-bold">
+                            {photos.length !== 0 && (
                               <button
-                                key={folder._id}
-                                onClick={handleFilterClick}
-                                className={`${filter === folder.name ? "text-teal-600 border-b border-teal-600" : "text-slate-400 hover:text-black"} transition-all pb-1`}
+                                onClick={() => {
+                                  setFilter("All");
+                                  setSelectedFolder(null);
+                                }}
+                                className={`${filter === "All" ? "text-teal-600 border-b border-teal-600" : "text-slate-400 hover:text-black"} transition-all pb-1`}
                               >
-                                {folder.name}
+                                All
                               </button>
-                            );
-                          })}
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-center gap-8">
-                      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-                        {photos &&
-                          photos.slice(0, visibleCount).map((photo, index) => {
-                            // Keep your existing infinite scroll logic if needed,
-                            // but usually load more replaces it.
-                            const isNearEnd =
-                              index ===
-                              photos.slice(0, visibleCount).length - 1;
-
-                            return (
-                              <div
-                                key={photo._id || index}
-                                ref={isNearEnd ? loaderRef : null}
-                                className="aspect-square overflow-hidden relative bg-slate-100 group md:hover:scale-105 ease-in-out duration-500 cursor-pointer"
-                              >
-                                {!imageLoaded[index] && (
-                                  <Skeleton
-                                    variant="rounded"
-                                    animation="wave"
-                                    width="100%"
-                                    height="100%"
-                                    className="absolute top-0 left-0 z-10"
-                                  />
-                                )}
-                                <img
-                                  src={photo.signedUrl || demo}
-                                  alt="portfolio"
-                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                  onLoad={() => handleImageLoad(index)}
-                                />
-                                <span
-                                  className="absolute top-0 p-2 rounded font-normal text-xl w-full h-full hover:bg-black/30 shadow ease-in-out duration-300"
-                                  onClick={() => {
-                                    setZoomImg(photo.signedUrl);
-                                    setZoomIndex(index);
-                                    // setZoomSource("photos");
-                                  }}
-                                ></span>
-                              </div>
-                            );
-                          })}
-                      </div>
-
-                      {/* Load More Button */}
-                      {photos && photos.length > visibleCount && (
-                        <div className="mt-12 flex justify-center">
-                          <button
-                            onClick={handleLoadMore}
-                            className="px-12 py-4 border border-slate-300 
-                                  text-sm uppercase tracking-[0.2em] hover:bg-black 
-                                  hover:text-white"
-                          >
-                            Load More Works
-                          </button>
+                            )}
+                            {folders &&
+                              folders.map((folder) => {
+                                const handleFilterClick = () => {
+                                  setFilter(folder.name);
+                                  setSelectedFolder(folder._id);
+                                };
+                                return (
+                                  <button
+                                    key={folder._id}
+                                    onClick={handleFilterClick}
+                                    className={`${filter === folder.name ? "text-teal-600 border-b border-teal-600" : "text-slate-400 hover:text-black"} transition-all pb-1`}
+                                  >
+                                    {folder.name}
+                                  </button>
+                                );
+                              })}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                    </> 
+
+                        <div className="flex flex-col items-center gap-8">
+                          {dataToShow.length !== 0 && (
+                            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                              {dataToShow &&
+                                dataToShow
+                                  .slice(0, visibleCount)
+                                  .map((photo, index) => {
+                                    // Keep your existing infinite scroll logic if needed,
+                                    // but usually load more replaces it.
+                                    const isNearEnd =
+                                      index ===
+                                      dataToShow.slice(0, visibleCount).length -
+                                      1;
+
+                                    return (
+                                      <div
+                                        key={photo._id || index}
+                                        ref={isNearEnd ? loaderRef : null}
+                                        className="aspect-square overflow-hidden relative bg-slate-100 group md:hover:scale-105 ease-in-out duration-500 cursor-pointer"
+                                      >
+                                        {!imageLoaded[index] && (
+                                          <Skeleton
+                                            variant="rounded"
+                                            animation="wave"
+                                            width="100%"
+                                            height="100%"
+                                            className="absolute top-0 left-0 z-10"
+                                          />
+                                        )}
+                                        <img
+                                          src={photo.signedUrl || demo}
+                                          alt="portfolio"
+                                          className="w-full h-full rounded-xl object-cover transition-transform duration-700 group-hover:scale-110"
+                                          onLoad={() => handleImageLoad(index)}
+                                        />
+                                        <span
+                                          className="absolute top-0 p-2 rounded font-normal text-xl w-full h-full hover:bg-black/30 shadow ease-in-out duration-300"
+                                          onClick={() => {
+                                            setZoomImg(photo.signedUrl);
+                                            setZoomIndex(index);
+                                            // setZoomSource("photos");
+                                          }}
+                                        ></span>
+                                      </div>
+                                    );
+                                  })}
+                            </div>
+                          )}
+
+                          {/* Load More Button */}
+                          {dataToShow.length > visibleCount && (
+                            <div className="mt-12 flex justify-center">
+                              <button
+                                onClick={handleLoadMore}
+                                className="px-12 py-4 border border-slate-300 
+      text-sm uppercase tracking-[0.2em] hover:bg-black 
+      hover:text-white"
+                              >
+                                Load More Works
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
                     ) : (
                       <div className="flex flex-col items-center justify-center py-16 text-center">
                         {/* Icon */}
@@ -865,20 +898,20 @@ function Publicview() {
               <aside className="lg:w-80 space-y-8" id="contact-section">
                 {/* Profile Header */}
                 <div className="flex flex-col items-start">
-                  <div className="w-24 h-24 bg-black p-2 mb-6">
+                  <div className="w-24 h-24 bg-black mb-6">
                     <img
                       src={profilePreview || profile}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h1 className="text-xl font-light mb-2">
+                  <h1 className="text-4xl font-light mb-2">
                     {portfolio?.brandName ? portfolio.brandName : "No name"}
                   </h1>
                   <p className="text-xs tracking-widest text-teal-600 font-bold uppercase mb-4">
-                    {portfolio?.tagline ? portfolio?.tagline : "No tag libne"}
+                    {portfolio?.tagline ? portfolio?.tagline : "No tag line"}
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-start">
                     <p className="text-slate-500 leading-relaxed text-sm font-sans transition-all duration-300">
                       {/* Logic: If length > 100 AND not expanded, show slice. Otherwise show full bio. */}
                       {portfolio?.biography
@@ -918,12 +951,12 @@ function Publicview() {
                 </div>
 
                 {/* Investment Card */}
-                <div className="bg-[#F3F3F3] p-8 border-2">
+                <div className="bg-[#F3F3F3] p-8 border-2 text-start">
                   <p className="text-[10px] tracking-widest text-slate-400 uppercase mb-4">
                     Investment
                   </p>
                   <div className="flex items-baseline mb-6">
-                    <span className="text-xl font-semibold">
+                    <span className="text-3xl font-semibold">
                       ₹{" "}
                       {portfolio?.pricing
                         ? portfolio?.pricing?.toLocaleString("en-IN")
@@ -937,7 +970,7 @@ function Publicview() {
                     Full-day coverage including post-production, digital
                     delivery, and licensing for editorial use.
                   </p>
-                  {portfolio?.contactPhone && (
+                  {portfolio.contactPhone && (
                     <button className="w-full bg-[#C80F0F] text-white py-4 px-6 text-xs tracking-widest uppercase hover:bg-black transition-colors">
                       <a
                         href={`https://wa.me/${portfolio?.contactPhone}`}
@@ -954,7 +987,7 @@ function Publicview() {
                 <aside className="lg:w-80 space-y-12">
                   {/* Connect Links */}
                   <div>
-                    {portfolio?.contactPhone && (
+                    {profile.contactPhone && (
                       <h3 className="text-[10px] tracking-widest uppercase text-slate-400 mb-6 font-sans font-bold">
                         Connect
                       </h3>
@@ -1052,8 +1085,8 @@ function Publicview() {
                           </a>
                         )}
                       </li>
-                      <li>
-                        {portfolio?.contactPhone && (
+                      {portfolio?.brandName && (
+                        <li>
                           <button
                             onClick={handleSharePortfolio}
                             className="flex items-center gap-3 group"
@@ -1066,8 +1099,8 @@ function Publicview() {
                               Share
                             </span>
                           </button>
-                        )}
-                      </li>
+                        </li>
+                      )}
                     </ul>
                   </div>
 
@@ -1216,11 +1249,10 @@ function Publicview() {
                     {tabs.map((tab) => (
                       <li key={tab.id} className="me-1">
                         <button
-                          className={`inline-block px-4 py-3 border-b-2 rounded-t-lg text-black font-normal text-sm transition-colors ${
-                            activeTab === tab.id
+                          className={`inline-block px-4 py-3 border-b-2 rounded-t-lg text-black font-normal text-sm transition-colors ${activeTab === tab.id
                               ? "text-blue border-blue"
                               : "hover:text-slate-700 hover:border-slate-300 dark:hover:text-slate-300 border-transparent dark:text-white"
-                          }`}
+                            }`}
                           onClick={() => setActiveTab(tab.id)}
                         >
                           {tab.label}
@@ -1332,11 +1364,7 @@ function Publicview() {
               onClick={() => {
                 const newIndex = zoomIndex - 1;
                 setZoomIndex(newIndex);
-                if (zoomSource === "photos") {
-                  setZoomImg(photos[newIndex].signedUrl);
-                } else {
-                  setZoomImg(photosFolder[newIndex].signedUrl);
-                }
+                setZoomImg(dataToShow[newIndex].signedUrl);
               }}
               className="absolute top-1/2 left-2 transform -translate-y-1/2 px-2 py-1 rounded"
             >
@@ -1346,12 +1374,12 @@ function Publicview() {
               />
             </button>
           )}
-          {zoomSource === "photos" && zoomIndex < photos.length - 1 && (
+          {zoomIndex < dataToShow.length - 1 && (
             <button
               onClick={() => {
                 const newIndex = zoomIndex + 1;
                 setZoomIndex(newIndex);
-                setZoomImg(photos[newIndex].signedUrl);
+                setZoomImg(dataToShow[newIndex].signedUrl);
               }}
               className="absolute top-1/2 right-2 transform -translate-y-1/2 px-2 py-1 rounded"
             >
@@ -1361,21 +1389,7 @@ function Publicview() {
               />
             </button>
           )}
-          {zoomSource === "images" && zoomIndex < photosFolder.length - 1 && (
-            <button
-              onClick={() => {
-                const newIndex = zoomIndex + 1;
-                setZoomIndex(newIndex);
-                setZoomImg(photosFolder[newIndex].signedUrl);
-              }}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 px-2 py-1 rounded"
-            >
-              <ChevronRightIcon
-                sx={{ fontSize: "45px" }}
-                className="text-white"
-              />
-            </button>
-          )}
+
         </div>
       </Dialog>
     </>

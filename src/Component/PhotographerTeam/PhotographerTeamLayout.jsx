@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import { Alert, Snackbar } from "@mui/material";
 import { UploadContext } from "./Context/UploadContext";
 import { useImageUploadWatcher } from "./Context/useImageUploadWatcher";
+import { useVideoUploadWatcher } from "./Context/useVideoUploadWatcher";
+import { UploadVideoContext } from "./Context/UploadVideoContext";
 
 // const baseurl = process.env.REACT_APP_BASE_URL;
 
@@ -48,6 +50,25 @@ function PhotographerTeamLayout() {
     // setHasStarted,
   } = useContext(UploadContext);
 
+  const {
+    uploadVideoState,
+    videoTotal,
+    setVideoTotal,
+    videoDuplicate,
+    setVideoDuplicate,
+    videoFailed,
+    setVideoFailed,
+    videoUploaded,
+    setVideoUploaded,
+    setUploadVideoState,
+    setVideos,
+    setVideoStatus,
+    setEventid,
+    setSubeventid,
+    setStepEventid,
+    setStepSubeventid,
+  } = useContext(UploadVideoContext);
+
   const cleanupUploads = () => {
     window.electronAPI.cancelUploadProcessing();
     window.electronAPI.deleteCompressed();
@@ -57,13 +78,7 @@ function PhotographerTeamLayout() {
 
   useEffect(() => {
     return () => {
-      // Cleanup when leaving PortfolioLayout
-      // window.electronAPI.cancelUploadProcessing();
-      // window.electronAPI.deleteCompressed();
-      // window.electronAPI.stopWatchingFolder?.();
-      // window.electronAPI.removeListeners?.();
       cleanupUploads();
-
       setStatus("completed");
       setEventsid("");
       setSubeventsid("");
@@ -76,6 +91,16 @@ function PhotographerTeamLayout() {
       setOpensnak(false);
       setShow(true);
       updateUploadState({ folderPath: null });
+      setVideoTotal(0);
+      setVideoDuplicate(0);
+      setVideoUploaded(0);
+      setVideoFailed(0);
+      setVideoStatus("completed");
+      setStepEventid("");
+      setEventid("");
+      setSubeventid("");
+      setStepSubeventid("");
+      setUploadVideoState({ folderPath: null });
     };
   }, []);
 
@@ -90,12 +115,8 @@ function PhotographerTeamLayout() {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // window.electronAPI.cancelUploadProcessing();
-        // window.electronAPI.deleteCompressed();
-        // window.electronAPI.stopWatchingFolder?.();
-        // window.electronAPI.removeListeners?.();
+        const compressedFolder = `${uploadState.folderPath}/compressed`;
         cleanupUploads();
-        // setHasStarted(false);
         setStatus("completed");
         setEventsid("");
         setSubeventsid("");
@@ -105,18 +126,19 @@ function PhotographerTeamLayout() {
         setTotal(0);
         setUploaded(0);
         setDuplicate(0);
+        window.electronAPI.deleteFolder(compressedFolder);
       }
     });
   };
 
-   useEffect(() => {
-      const interval = setInterval(async () => {
-        const data = await window.electronAPI.getSystemStats();
-        setStats(data);
-      }, 1000);
-  
-      return () => clearInterval(interval);
-    }, []);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const data = await window.electronAPI.getSystemStats();
+      setStats(data);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -158,10 +180,7 @@ function PhotographerTeamLayout() {
 
   useEffect(() => {
     if (total > 0 && uplaoded + duplicate + failed === total) {
-      // window.electronAPI.cancelUploadProcessing();
-      // window.electronAPI.deleteCompressed();
-      // window.electronAPI.stopWatchingFolder?.();
-      // window.electronAPI.removeListeners?.();
+      const compressedFolder = `${uploadState.folderPath}/compressed`;
       cleanupUploads();
       setStatus("completed");
       setEventsid("");
@@ -172,6 +191,7 @@ function PhotographerTeamLayout() {
         setTotal(0);
         setUploaded(0);
         setDuplicate(0);
+        window.electronAPI.deleteFolder(compressedFolder);
         setOpensnak(true);
       }, 2000);
     }
@@ -184,6 +204,74 @@ function PhotographerTeamLayout() {
     setOpensnak(false);
   };
   // console.log("Uploaded:", uplaoded, "Duplicate:", duplicate, "Total:", total);
+
+  //============== VIDEO UPLOADING ================
+  useVideoUploadWatcher({
+    folderPath: uploadVideoState.folderPath,
+  });
+
+  const videoprogressPercentage =
+    videoTotal === 0
+      ? 0
+      : ((videoUploaded + videoDuplicate + videoFailed) / videoTotal) * 100;
+
+  useEffect(() => {
+    if (
+      videoTotal > 0 &&
+      videoUploaded + videoDuplicate + videoFailed === videoTotal
+    ) {
+      cleanupUploads();
+      setStatus("completed");
+      setEventid("");
+      setSubeventid("");
+      const compressedFolder = `${uploadVideoState.folderPath}/compressed`;
+      setTimeout(() => {
+        setUploadVideoState({ folderPath: null });
+        setVideoTotal(0);
+        setVideoDuplicate(0);
+        setVideoUploaded(0);
+        setVideoStatus("idle");
+        setStepSubeventid("");
+        setStepEventid("");
+        setVideos([]);
+        window.electronAPI.deleteFolder(compressedFolder);
+        window.electronAPI.cancelVideoCompress();
+        setVideoFailed(0);
+        setOpensnak(true);
+      }, 2000);
+    }
+  }, [videoUploaded, videoTotal, videoDuplicate, videoFailed]);
+
+  const handleCancelVideoUpload = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, cancel it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const compressedFolder = `${uploadVideoState.folderPath}/compressed`;
+        window.electronAPI.deleteFolder(compressedFolder);
+        window.electronAPI.cancelVideoCompress();
+        setVideoStatus("completed");
+        setUploadVideoState({ folderPath: null });
+        setEventid("");
+        setSubeventid("");
+        setError("");
+        setVideoTotal(0);
+        setVideoDuplicate(0);
+        setStepSubeventid("");
+        setStepEventid("");
+        setVideoUploaded(0);
+        setVideoFailed(0);
+        setOpensnak(true);
+        setVideos([]);
+      }
+    });
+  };
 
   return (
     <>
@@ -240,7 +328,7 @@ function PhotographerTeamLayout() {
           </div>
         </section>
       </div>
-      {total > 0 && (
+      {(videoTotal > 0 || total > 0) && (
         <div className="fixed bottom-4 right-4 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-2xl">
           <div
             className="flex justify-between items-center bg-gradient-to-r from-blue to-blueHover px-4 py-2 cursor-pointer"
@@ -251,9 +339,8 @@ function PhotographerTeamLayout() {
             </h2>
             <div className="flex items-center gap-2">
               <ExpandMoreIcon
-                className={`text-white transform transition-transform duration-300 ${
-                  show ? "rotate-180" : ""
-                }`}
+                className={`text-white transform transition-transform duration-300 ${show ? "rotate-180" : ""
+                  }`}
               />
               {uplaoded + duplicate === total && (
                 <CloseIcon
@@ -267,9 +354,8 @@ function PhotographerTeamLayout() {
             </div>
           </div>
           <div
-            className={`transition-[max-height] duration-500 ease-in-out overflow-hidden ${
-              show ? "max-h-58" : "max-h-0"
-            }`}
+            className={`transition-[max-height] duration-500 ease-in-out overflow-hidden ${show ? "max-h-58" : "max-h-0"
+              }`}
           >
             <div className="px-5 py-4 space-y-4">
               {stats && (
@@ -278,52 +364,89 @@ function PhotographerTeamLayout() {
                     CPU Cores: {stats.cpu.cores}
                   </p>
                   <p className="text-slate-700 font-semibold text-base">
-                   Upload Speed: {networkSpeed} MB/s
+                    Upload Speed: {networkSpeed} MB/s
                   </p>
                 </div>
               )}
-              <div className="flex justify-between items-center">
-                <div className="flex flex-col text-start">
-                  <p className="text-slate-700 font-semibold text-base">
-                    {uplaoded} / {total} Images
-                  </p>
-                  <p className="text-slate-700 font-semibold text-base">
-                    Duplicate Images: {duplicate}
-                  </p>
-                    <p className="text-red-600 font-semibold text-base">
-                      Failed Images: {failed}
-                    </p>
-                </div>
-                {uplaoded + duplicate !== total && (
-                  <button
-                    className="text-red-600 font-semibold hover:text-red-700 transition-colors"
-                    onClick={() => {
-                      handleCancelUpload();
-                    }}
-                  >
-                    Cancel All
-                  </button>
-                )}
-              </div>
+              {total > 0 && (
+                <>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col text-start">
+                      <p className="text-slate-700 font-semibold text-base">
+                        {uplaoded} / {total} Images
+                      </p>
+                      <p className="text-slate-700 font-semibold text-base">
+                        Duplicate Images: {duplicate}
+                      </p>
+                      <p className="text-red-600 font-semibold text-base">
+                        Failed Images: {failed}
+                      </p>
+                    </div>
+                    {uplaoded + duplicate !== total && (
+                      <button
+                        className="text-red-600 font-semibold hover:text-red-700 transition-colors"
+                        onClick={() => {
+                          handleCancelUpload();
+                        }}
+                      >
+                        Cancel All
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative w-full h-3 bg-gray-200 rounded-full border border-slate-300 overflow-hidden">
+                    <div
+                      className="bg-blue h-4 transition-all duration-500"
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </>
+              )}
+              {videoTotal > 0 && (
+                <>
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col text-start">
+                      <p className="text-slate-700 font-semibold text-base">
+                        {videoUploaded} / {videoTotal} Videos
+                      </p>
+                      <p className="text-slate-700 font-semibold text-base">
+                        Duplicate Videos: {videoDuplicate}
+                      </p>
+                      <p className="text-red-600 font-semibold text-base">
+                        Failed Videos: {videoFailed}
+                      </p>
+                    </div>
+                    {videoUploaded + videoDuplicate !== videoTotal && (
+                      <button
+                        className="text-red-600 font-semibold hover:text-red-700 transition-colors"
+                        onClick={handleCancelVideoUpload}
+                      >
+                        Cancel All
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative w-full h-3 bg-gray-200 rounded-full border border-slate-300 overflow-hidden">
+                    <div
+                      className="bg-blue h-4 transition-all duration-500"
+                      style={{ width: `${videoprogressPercentage}%` }}
+                    ></div>
+                  </div>
+                </>
+              )}
+
               {error && (
                 <p className="text-red-600 font-medium text-sm">{error}</p>
               )}
-              {total > 0 && uplaoded + duplicate === total ? (
-                <div>
-                  <p className="text-green-600 font-semibold text-base">
-                    Upload Images successfully!
-                  </p>
-                </div>
-              ) : (
-                <div className="relative w-full h-3 bg-gray-200 rounded-full border border-slate-300 overflow-hidden">
-                  <div
-                    className="bg-blue h-4 transition-all duration-500"
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
-                </div>
-              )}
+              {(videoTotal > 0 &&
+                videoUploaded + videoDuplicate === videoTotal) ||
+                (total > 0 && uplaoded + duplicate === total && (
+                  <div>
+                    <p className="text-green-600 font-semibold text-base">
+                      Upload successfully!
+                    </p>
+                  </div>
+                ))}
               <p className="text-xs text-blueHover">
-                Uploading large Images works best with 8 or more CPU cores and a
+                Uploading large Images/Videos works best with 8 or more CPU cores and a
                 stable broadband connection.
               </p>{" "}
             </div>
