@@ -12,6 +12,7 @@ const PhotographerEventContextProvider = ({ children }) => {
   const [notification, setNotification] = useState();
   const [profile, setProfile] = useState();
   const [coinsglobal, setCoinsglobal] = useState(0);
+  const [photoCount, setPhotoCount] = useState(0)
   return (
     <PhotographerEventContext.Provider
       value={{
@@ -33,6 +34,8 @@ const PhotographerEventContextProvider = ({ children }) => {
         setProfile,
         coinsglobal,
         setCoinsglobal,
+        photoCount,
+        setPhotoCount,
       }}
     >
       {children}

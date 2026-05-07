@@ -8,10 +8,10 @@ import { Outlet } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Swal from "sweetalert2";
 import { Alert, Snackbar } from "@mui/material";
-import { UploadContext } from "./Context/UploadContext";
 import { useImageUploadWatcher } from "./Context/useImageUploadWatcher";
-import { useVideoUploadWatcher } from "./Context/useVideoUploadWatcher";
-import { UploadVideoContext } from "./Context/UploadVideoContext";
+import { useVideoUploadWatcher } from "./Context/useTeamVideoUploadWatcher";
+import { UploadContext } from "./Context/UploadContext";
+import { UploadVideoContext } from "./Context/UploadTeamVideoContext";
 
 // const baseurl = process.env.REACT_APP_BASE_URL;
 
@@ -205,7 +205,9 @@ function PhotographerTeamLayout() {
   };
   // console.log("Uploaded:", uplaoded, "Duplicate:", duplicate, "Total:", total);
 
+  
   //============== VIDEO UPLOADING ================
+
   useVideoUploadWatcher({
     folderPath: uploadVideoState.folderPath,
   });
@@ -230,9 +232,7 @@ function PhotographerTeamLayout() {
         setVideoTotal(0);
         setVideoDuplicate(0);
         setVideoUploaded(0);
-        setVideoStatus("idle");
-        setStepSubeventid("");
-        setStepEventid("");
+        setVideoStatus("idle");       
         setVideos([]);
         window.electronAPI.deleteFolder(compressedFolder);
         window.electronAPI.cancelVideoCompress();
@@ -319,7 +319,7 @@ function PhotographerTeamLayout() {
               <Header />
             </header>
             <main
-              className="flex-1 p-4 dark:bg-slate-900 bg-gray-200 md:mt-12 overflow-auto"
+              className="flex-1 p-4 dark:bg-slate-900 bg-gray-50 md:mt-12 overflow-auto"
               id={"fff"}
             >
               <Outlet />
@@ -467,7 +467,7 @@ function PhotographerTeamLayout() {
           onClose={handleClosesnak}
         >
           <p className="text-white font-semibold text-base">
-            Upload Images Successfully!
+            Upload File Successfully!
           </p>
         </Alert>
       </Snackbar>

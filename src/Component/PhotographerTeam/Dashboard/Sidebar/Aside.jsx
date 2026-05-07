@@ -5,7 +5,7 @@ import EventIcon from "@mui/icons-material/Event";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { Divider } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import logo from "../../../image/fulllogo.jpg";
+import logo from "../../../image/Newlogo.png";
 import logoshow from "../../../image/bg-removed.png";
 
 function Aside({ setIsOpen, isOpen }) {
@@ -20,7 +20,7 @@ function Aside({ setIsOpen, isOpen }) {
         <nav className="md:flex flex-col space-y-4 ">
           <div className=" title flex justify-center gap-4 items-center border-solid border-b-2 border-slate-100 dark:border-slate-800 py-2 dark:text-white">
             {!isOpen ? (
-              <img src={logo} alt="logo" className="w-[80px] lg:w-[180px]" />
+              <img src={logo} alt="logo" className="w-[80px] lg:w-[125px]" />
             ) : (
               <img src={logoshow} alt="logo" className="w-[40px]" />
             )}
@@ -41,7 +41,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <HomeIcon size={20} />
-              {(!isOpen || window.innerWidth < 768) && <span>Dashboard</span>}
+              {(!isOpen || window.innerWidth < 768) && <span className="text-base">Dashboard</span>}
             </Link>
 
             <Link
@@ -59,10 +59,10 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <EventIcon size={20} />
-              {!isOpen && <span>Events</span>}
+              {!isOpen && <span className="text-base">Events</span>}
             </Link>
             {(!isOpen || window.innerWidth < 768) && (
-              <p className="font-semibold text-slate-700 my-2 dark:text-white text-start">
+              <p className="font-semibold text-slate-700 my-2 dark:text-white text-start text-base">
                 Tools & Support
               </p>
             )}
@@ -83,7 +83,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <CalendarMonthIcon size={20} />
               {(!isOpen || window.innerWidth < 768) && (
-                <span>Event Calendar</span>
+                <span className="text-base">Event Calendar</span>
               )}
             </Link>
             <Link
@@ -101,7 +101,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <SettingsIcon size={20} />
-              {(!isOpen || window.innerWidth < 768) && <span>Settings</span>}
+              {(!isOpen || window.innerWidth < 768) && <span className="text-base">Settings</span>}
             </Link>
           </div>
         </nav>

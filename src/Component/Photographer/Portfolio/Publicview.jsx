@@ -543,7 +543,8 @@ function Publicview() {
           }
           .slick-prev, .slick-next{
             top: 50%;
-          }        
+          }  
+          
           
           @media only screen and (max-width: 768px) {
             .slick-prev:before,
@@ -621,19 +622,19 @@ function Publicview() {
                         Featured Albums
                       </h2>
                       { }
-                      {folders && folders.length > 2 && (
+                      {/* {folders && folders.length > 2 && (
                         <button
                           onClick={() => setShowAll((prev) => !prev)}
                           className="text-xs block md:hidden tracking-widest uppercase text-slate-500 hover:text-black transition-colors"
                         >
                           {showAll ? "View Less Albums" : "View All Albums"}
                         </button>
-                      )}
+                      )} */}
                     </div>
 
-                    <div className="grid block md:hidden grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex block md:hidden overflow-x-auto no-scrollbar gap-4">
                       {folders &&
-                        displayedFolders.map((folder) => {
+                        folders.map((folder) => {
                           const isSelected = folder._id === selectedFolder; // highlight if selected
                           const images = folder?.randomPhotos || [];
                           const currentIndex = hoverIndex[folder._id] || 0;
@@ -641,7 +642,7 @@ function Publicview() {
                           return (
                             <div
                               key={folder._id}
-                              className="group cursor-pointer"
+                              className="group cursor-pointer min-w-[25%] flex-shrink-0"
                               // Setting the outer container to the fixed width ensures the title also stays within bounds
 
                               onClick={() => {
@@ -660,7 +661,7 @@ function Publicview() {
                                             ${isSelected ? "scale-105 border-2 border-teal-600" : "hover:scale-105"}
                                           `}
                                 // Applying fixed width and height here
-                                style={{ height: "400px" }}
+                                style={{ height: "100px" }}
                               >
                                 <img
                                   src={images[currentIndex]?.signedUrl || demo}
@@ -761,7 +762,7 @@ function Publicview() {
                   </>
                 )}
 
-                <div className="flex flex-col lg:flex-row gap-12 mt-12">
+                <div className="flex flex-col lg:flex-row gap-12 md:mt-12 mt-8">
                   {/* Left Column: Gallery Selection */}
                   <div className="flex-1">
                     {/* Header & Filter */}

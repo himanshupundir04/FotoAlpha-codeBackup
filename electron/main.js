@@ -99,7 +99,7 @@ async function createWindow() {
     },
   });
 
-  // Menu.setApplicationMenu(null);
+  Menu.setApplicationMenu(null);
 
   const isDev = !app.isPackaged;
 
@@ -861,101 +861,9 @@ ipcMain.handle("select-video-folder", async () => {
   return result.filePaths[0];
 });
 
-// ipcMain.handle("read-video-folder", async (event, folderPath) => {
-//   const exts = [".mp4", ".mov", ".mkv", ".avi", ".webm"];
-
-//   const files = fs
-//     .readdirSync(folderPath)
-//     .filter((f) => exts.includes(path.extname(f).toLowerCase()))
-//     .map((f) => ({
-//       name: f,
-//       path: path.join(folderPath, f),
-//     }));
-
-//   // 🔥 Send total immediately
-//   event.sender.send("total-video-count", files.length);
-
-//   return files;
-// });
-
-
-// ipcMain.handle("read-file-buffer-video", async (_, filePath) => {
-//   return fs.readFileSync(filePath);
-// });
-
-// ipcMain.handle("generate-video-thumbnail", async (_, videoPath) => {
-//   const folder = path.dirname(videoPath);
-//   const thumbDir = path.join(folder, "compressed");
-
-//   if (!fs.existsSync(thumbDir)) {
-//     fs.mkdirSync(thumbDir, { recursive: true });
-//   }
-
-//   const name = path.basename(videoPath, path.extname(videoPath));
-//   const out = path.join(thumbDir, `${name}_thumb.jpg`);
-
-//   if (!fs.existsSync(out)) {
-//     await new Promise((res, rej) => {
-//       ffmpeg(videoPath)
-//         .on("end", res)
-//         .on("error", rej)
-//         .screenshots({
-//           count: 1,
-//           folder: thumbDir,
-//           filename: `${name}_thumb.jpg`,
-//           size: "320x?",
-//         });
-//     });
-//   }
-
-//   return `file:///${out.replace(/\\/g, "/")}`;
-// });
-
-// ipcMain.handle("compress-video", async (_, videoPath) => {
-//     const CHUNK_SIZE = os.cpus().length;
-
-//   const folder = path.dirname(videoPath);
-//   const compressedDir = path.join(folder, "compressed");
-
-//   if (!fs.existsSync(compressedDir)) {
-//     fs.mkdirSync(compressedDir, { recursive: true });
-//   }
-
-//   const name = path.basename(videoPath, path.extname(videoPath));
-//   const out = path.join(compressedDir, `${name}_compressed.mp4`);
-
-//   // 🔹 Compress
-//   await new Promise((res, rej) => {
-//     ffmpeg(videoPath)
-//       .outputOptions([
-//         "-vcodec libx264",
-//         "-crf 28",
-//         "-preset fast",
-//         "-vf scale='min(1280,iw)':-2",
-//       ])
-//       .on("end", res)
-//       .on("error", rej)
-//       .save(out);
-//   });
-
-//   // 🔹 Get size
-//   const stats = fs.statSync(out);
-//   const size = stats.size;
-
-//   // 🔹 Generate SHA256 hash
-//   const buffer = fs.readFileSync(out);
-//   const hash = crypto.createHash("sha256").update(buffer).digest("hex");
-
-//   return {
-//     name: path.basename(out),
-//     path: out,
-//     type: "video/mp4",
-//     size,
-//     hash,
-//   };
-// });
-
-const MAX_COMPRESS = os.cpus().length;
+// const MAX_COMPRESS = os.cpus().length;
+const TOTAL_CORES = os.cpus().length;
+const MAX_COMPRESS = Math.max(1, Math.floor(TOTAL_CORES * 0.5));
 
 let activeJobs = 0;
 let queue = [];

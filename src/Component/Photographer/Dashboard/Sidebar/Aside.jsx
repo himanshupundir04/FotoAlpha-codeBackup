@@ -63,7 +63,7 @@ function Aside({ setIsOpen, isOpen }) {
         >
           <div className=" title flex justify-center py-2 gap-4 items-center border-solid border-b-2 border-slate-100 dark:border-slate-800 dark:text-white">
             {!isOpen ? (
-              <img src={logo} alt="logo" className="w-[80px] lg:w-[145px]" />
+              <img src={logo} alt="logo" className="w-[80px] lg:w-[125px]" />
             ) : (
               <img src={logoclose} alt="logo" className="w-[40px]" />
             )}
@@ -85,7 +85,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <AddToPhotosIcon size={20} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Upload Photos</span>
+                <span className="text-base">Upload Photos</span>
               )}
             </Link>
             <Link
@@ -102,7 +102,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <HomeIcon sx={{ fontSize: 22 }} />
-              {(!isOpen || window.innerWidth < 1024) && <span>Dashboard</span>}
+              {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Dashboard</span>}
             </Link>
             <Link
               to="public_portfolio"
@@ -119,7 +119,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <AccountCircleIcon sx={{ fontSize: 22 }} />
-              {(!isOpen || window.innerWidth < 1024) && <span>Portfolio</span>}
+              {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Portfolio</span>}
             </Link>
 
             <div>
@@ -134,7 +134,7 @@ function Aside({ setIsOpen, isOpen }) {
               >
                 <div className="flex items-center space-x-2">
                   <EventIcon sx={{ fontSize: 22 }} />
-                  {(!isOpen || window.innerWidth < 1024) && <span>Events</span>}
+                  {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Events</span>}
                 </div>
                 {(!isOpen || window.innerWidth < 1024) && (
                   <span>
@@ -160,7 +160,7 @@ function Aside({ setIsOpen, isOpen }) {
                   >
                     <EventAvailableIcon sx={{ fontSize: 20 }} />
                     {(!isOpen || window.innerWidth < 1024) && (
-                      <span>Events</span>
+                      <span className="text-base">Events</span>
                     )}
                   </Link>
                   <Link
@@ -179,7 +179,7 @@ function Aside({ setIsOpen, isOpen }) {
                   >
                     <EditCalendarIcon sx={{ fontSize: 20 }} />
                     {(!isOpen || window.innerWidth < 1024) && (
-                      <span> Add Event</span>
+                      <span className="text-base"> Add Event</span>
                     )}
                   </Link>
                   <Link
@@ -198,7 +198,7 @@ function Aside({ setIsOpen, isOpen }) {
                   >
                     <EventNoteIcon sx={{ fontSize: 20 }} />
                     {(!isOpen || window.innerWidth < 1024) && (
-                      <span>Events List</span>
+                      <span className="text-base">Events List</span>
                     )}
                   </Link>
                   <Link
@@ -217,7 +217,7 @@ function Aside({ setIsOpen, isOpen }) {
                   >
                     <PrintIcon sx={{ fontSize: 20 }} />
                     {(!isOpen || window.innerWidth < 1024) && (
-                      <span>Print orders</span>
+                      <span className="text-base">Print orders</span>
                     )}
                   </Link>
                 </div>
@@ -242,7 +242,7 @@ function Aside({ setIsOpen, isOpen }) {
             </Link> */}
 
             {(!isOpen || window.innerWidth < 1024) && (
-              <p className="font-medium text-slate-700 my-2 dark:text-white">
+              <p className="font-medium text-slate-700 my-2 dark:text-white text-base">
                 Tools & Support
               </p>
             )}
@@ -261,7 +261,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <GroupsIcon sx={{ fontSize: 22 }} />
-              {(!isOpen || window.innerWidth < 1024) && <span>Team</span>}
+              {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Team</span>}
             </Link>
             <Link
               to="calendar"
@@ -278,7 +278,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <CalendarMonthIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Calendar</span>
+                <span className="text-base">Calendar</span>
               )}
             </Link>
             <Link
@@ -296,7 +296,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <FeedbackIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Feedback</span>
+                <span className="text-base">Feedback</span>
               )}
             </Link>
             <Link
@@ -314,7 +314,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <AccountBalanceWalletIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Accounts</span>
+                <span className="text-base">Accounts</span>
               )}
             </Link>
             <Link
@@ -332,7 +332,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <LocalFireDepartmentIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Coins</span>
+                <span className="text-base">Coins</span>
               )}
             </Link>
             <Link
@@ -350,7 +350,7 @@ function Aside({ setIsOpen, isOpen }) {
             >
               <GroupAddIcon sx={{ fontSize: 22 }} />
               {(!isOpen || window.innerWidth < 1024) && (
-                <span>Referrals</span>
+                <span className="text-base">Referrals</span>
               )}
             </Link>
             <Link
@@ -367,7 +367,7 @@ function Aside({ setIsOpen, isOpen }) {
               }}
             >
               <SettingsIcon sx={{ fontSize: 20 }} />
-              {(!isOpen || window.innerWidth < 1024) && <span>Settings</span>}
+              {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Settings</span>}
             </Link>
             {(!isOpen || window.innerWidth < 1024) && (
               <>

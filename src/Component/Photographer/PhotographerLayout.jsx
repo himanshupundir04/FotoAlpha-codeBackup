@@ -532,7 +532,7 @@ function PortfolioLayout() {
           onClose={handleClosesnak}
         >
           <p className="text-white font-semibold text-base">
-            Upload Successfully!
+            Upload file Successfully!
           </p>
         </Alert>
       </Snackbar>

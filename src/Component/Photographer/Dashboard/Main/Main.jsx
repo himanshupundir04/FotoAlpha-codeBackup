@@ -533,6 +533,7 @@ function Main() {
                                     stroke={entry.color}
                                   />
                                 ))}
+                                <Legend  wrapperStyle={{ fontSize: "12px" }}/>
                               </RechartsPie>
                               <Tooltip
                                 formatter={(value, name) => [value, name]}

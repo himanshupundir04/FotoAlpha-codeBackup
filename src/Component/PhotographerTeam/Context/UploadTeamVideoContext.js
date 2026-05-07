@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 export const UploadVideoContext = createContext(null);
 
-export const UploadVideoProvider = ({ children }) => {
+export const UploadTeamVideoProvider = ({ children }) => {
   const [uploadVideoState, setUploadVideoState] = useState({
     folderPath: null,
     isUploading: false,

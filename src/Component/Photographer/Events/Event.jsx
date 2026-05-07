@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import BoltIcon from "@mui/icons-material/Bolt";
 import demo from "../../image/demo.jpg";
 import { toast, ToastContainer } from "react-toastify";
+import { PhotographerEventContext } from "../Context/PhotographerEventContext";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -23,6 +24,7 @@ function Event() {
   const [searchTerm, setSearchTerm] = useState("");
   const id = useLocation().pathname.split("/")[3];
   const [permission, setPermission] = useState(false);
+  const {setPhotoCount} = useContext(PhotographerEventContext)
 
   useEffect(() => {
     fetchEvents();
@@ -222,8 +224,10 @@ function Event() {
                           <div
                             key={data._id || index}
                             className="group overflow-hidden relative rounded-xl bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer "
-                            onClick={() =>
+                            onClick={() => {
+                               setPhotoCount(data?.photoCount || 0);
                               navigate(`/photographer/event/${data._id}`)
+                            }
                             }
                           >
                             <div className="relative rounded-t-xl overflow-hidden">

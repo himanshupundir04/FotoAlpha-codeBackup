@@ -4,9 +4,9 @@ import { TablePagination } from "@mui/material";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-import { UploadVideoContext } from "../Context/UploadVideoContext";
 // import { PortfolioContext } from "../Context/PortfolioContext";
 import { useParams } from "react-router-dom";
+import { UploadVideoContext } from "../Context/UploadTeamVideoContext";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -104,55 +104,8 @@ function SyncVideos({ videoUploadMode, setVideoUploadMode }) {
     // console.log("slected folder", selected);
   };
 
-  const columns = [
-    { name: "preview", label: "Preview" },
-    { name: "file", label: "File" },
-    {
-      name: "status",
-      label: "Status",
-      options: {
-        customBodyRender: (value) => {
-          const map = {
-            Completed: "bg-green-500",
-            Failed: "bg-red-500",
-            Pending: "bg-blue-500",
-            Uploading: "bg-yellow-500",
-            Compressing: "bg-purple-500",
-          };
-          return (
-            <span
-              className={`${map[value]} text-white px-3 py-1 rounded-full text-sm`}
-            >
-              {value}
-            </span>
-          );
-        },
-      },
-    },
-    { name: "duration", label: "Duration" },
-    { name: "time", label: "Time" },
-    {
-      name: "_id",
-      label: "Action",
-      options: {
-        customBodyRender: (id) => (
-          <button onClick={() => handleDelete(id)} className="text-red-600">
-            {/* <DeleteIcon /> */}
-          </button>
-        ),
-      },
-    },
-  ];
-
-  const options = {
-    filter: false,
-    search: false,
-    pagination: false,
-    selectableRows: "none",
-    download: false,
-    print: false,
-    viewColumns: false,
-  };
+  
+ 
 
   return (
     <>

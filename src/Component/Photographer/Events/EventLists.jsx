@@ -516,11 +516,11 @@ function EventLists() {
                         <option value="Cancelled">Cancelled</option>
                       </select>
                     </div>
-                    <div className="relative flex w-full md:w-max md:w-[120px]">
+                    <div className="relative flex w-full lg:w-[130px]">
                       <div className="flex items-center gap-2 w-full px-4 py-1.5 border border-slate-200 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-600 focus-within:border-[#0b8599] transition-colors shadow-sm">
                         <input
                           type="text"
-                          placeholder="Search events..."
+                          placeholder="Search..."
                           value={searchText}
                           name="search"
                           onChange={(e) => setSearchText(e.target.value)}

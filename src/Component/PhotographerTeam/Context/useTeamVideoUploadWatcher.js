@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef } from "react";
 import axios from "axios";
-import { UploadVideoContext } from "./UploadVideoContext";
+import { UploadVideoContext } from "./UploadTeamVideoContext";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 const MAX_CONCURRENT_UPLOADS = 2;
@@ -17,8 +17,7 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
     setVideoDuplicate,
     eventid,
     subeventid,
-    stepeventid,
-    stepsubeventid,
+    
   } = useContext(UploadVideoContext);
 
   // console.log("eventid", eventid)
@@ -27,10 +26,9 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
   // console.log("stepsubeventid", stepsubeventid)
   
    const resolvedEventId =
-    eventid?.value || eventid || stepeventid?.value || stepeventid || null;
+    eventid?.value || eventid || null;
 
-  const resolvedSubEventId =
-    stepsubeventid?.value || stepsubeventid || subeventid?.value || subeventid || null;
+  const resolvedSubEventId = subeventid?.value || subeventid || null;
 
 
   const eventIdRef = useRef(null);

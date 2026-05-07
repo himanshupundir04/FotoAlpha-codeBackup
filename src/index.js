@@ -19,6 +19,8 @@ import PhotographerEventContextProvider from "./Component/Photographer/Context/P
 import OrganizationEventContextProvider from "./Component/Organization/Context/OrganizationEventContext";
 import UploadContextProvider from "./Component/PhotographerTeam/Context/UploadContext";
 import { UploadVideoProvider } from "./Component/Photographer/Context/UploadVideoContext";
+import { UploadTeamVideoProvider } from "./Component/PhotographerTeam/Context/UploadTeamVideoContext";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -32,6 +34,7 @@ root.render(
                 <OrganizationEventContextProvider>
                   <PhotographerTeamEventContextProvider>
                     <UploadContextProvider>
+                      <UploadTeamVideoProvider>
                       <PortfolioProvider>
                         <OrganizationPortfolioProvider>
                           <PlanContextProvider>
@@ -41,6 +44,7 @@ root.render(
                           </PlanContextProvider>
                         </OrganizationPortfolioProvider>
                       </PortfolioProvider>
+                      </UploadTeamVideoProvider>
                     </UploadContextProvider>
                   </PhotographerTeamEventContextProvider>
                 </OrganizationEventContextProvider>

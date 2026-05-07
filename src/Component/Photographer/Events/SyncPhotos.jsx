@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { toast } from "react-toastify";
+import React, { useState, useEffect, useContext, useRef, useCallback, useMemo } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -41,144 +41,107 @@ function SyncPhotos() {
   const [selectedPhotoLoading, setSelectedPhotoLoading] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
   const [dialogList, setDialogList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // console.log(status, "status")
 
   useEffect(() => {
-    fetchPhoto();
-  }, [page, rowsPerPage]);
+    fetchPhoto(1);
+  }, []);
 
   useEffect(() => {
     setEventsid(eventId);
     setSubeventsid(subeventId);
   }, [eventId, subeventId]);
 
-  const fetchPhoto = async () => {
+  // -------------------------
+  // INFINITE SCROLL
+  // -------------------------
+  const observer = useRef();
+
+  const lastElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          const next = currentPage + 1;
+          setCurrentPage(next);
+          fetchPhoto(next);
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, currentPage]
+  );
+
+  // -------------------------
+  // TRANSFORM DATA
+  // -------------------------
+  const transformPhoto = (photo) => {
+    const isVideo = /\.(mp4|mov|avi|mkv|webm)$/i.test(photo.filename);
+
+    const formatBytes = (bytes) => {
+      if (!bytes) return "0 B";
+      const k = 1024;
+      const sizes = ["B", "KB", "MB", "GB"];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return (bytes / Math.pow(k, i)).toFixed(2) + " " + sizes[i];
+    };
+
+    return {
+      file: photo.filename.split(".")[0],
+      size: formatBytes(photo?.metadata?.size),
+      _id: photo.id,
+      url: photo.urlThumbnailSignedUrl || photo.urlImageSignedUrl,
+      type: isVideo ? "video" : "image",
+      createdAt: photo.createdAt,
+    };
+  };
+
+  const transformedPhotos = useMemo(
+    () => photos.map(transformPhoto),
+    [photos]
+  );
+
+  const filteredData = useMemo(
+    () => transformedPhotos.filter((i) => i.type === mediaFilter),
+    [transformedPhotos, mediaFilter]
+  );
+
+  // -------------------------
+  // FETCH PHOTOS
+  // -------------------------
+  const fetchPhoto = async (page = 1) => {
+    if (loading) return;
+
+    setLoading(true);
     try {
-      const response = await axios.get(
+      const res = await axios.get(
         `${baseURL}/photos/get/${eventId}/${subeventId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "ngrok-skip-browser-warning": "69420",
           },
-          params: {
-            page: page + 1,
-            limit: rowsPerPage,
-          },
-        },
+          params: { page, limit: 20 },
+        }
       );
-      const photos = response.data.data.photos;
-      setPhotos(photos);
-      setTotalphoto(response.data.data.pagination.total);
-      setPagination(response.data.data.pagination);
-      // console.log(photos)
 
-      const serializablePhotos = photos.map((photo) => {
-        // Remove file extension
-        const fileNameWithoutExt = photo.filename.split(".")[0];
+      const newPhotos = res.data.data.photos || [];
 
-        // Format size
-        const formatBytes = (bytes, decimals = 2) => {
-          if (!bytes) return "0 B";
-          const k = 1024;
-          const dm = decimals < 0 ? 0 : decimals;
-          const sizes = ["B", "KB", "MB", "GB", "TB"];
-          const i = Math.floor(Math.log(bytes) / Math.log(k));
-          return (
-            parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
-          );
-        };
-
-        const isVideo = /\.(mp4|mov|avi|mkv|webm|flv|wmv)$/i.test(photo.filename);
-
-        return {
-          file: fileNameWithoutExt,
-          size: formatBytes(photo?.metadata?.size),
-          status: "Completed",
-          reason: "Uploaded",
-          time: new Date(photo.createdAt).toLocaleString(),
-          _id: photo.id || photo._id || Math.random().toString(36).substr(2, 9),
-          url: photo.urlThumbnailSignedUrl || photo.urlImageSignedUrl,
-          type: isVideo ? "video" : "image",
-        };
-      });
-
-      setTableData(
-        serializablePhotos.map((item, index) => ({
-          ...item,
-          preview: (
-            item.type === "video" ? (
-              <div
-                className="relative w-16 h-16 cursor-pointer"
-                // onClick={() => {
-                //   setZoomItem(item);
-                //   setZoomIndex(index);
-                // }}
-                onClick={() => {
-                  const currentList = serializablePhotos.filter(
-                    i => i.type === item.type
-                  );
-
-                  const indexInList = currentList.findIndex(
-                    i => i._id === item._id
-                  );
-
-                  if (indexInList === -1) {
-                    console.error("Item not found in list", item, currentList);
-                    return;
-                  }
-
-                  setDialogList(currentList);
-                  fetchPhotoById(item._id, indexInList);
-                }}
-              >
-                <video
-                  src={item.url}
-                  className="w-full h-full object-cover rounded"
-                />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
-                  ▶
-                </div>
-              </div>
-            ) : (
-              <img
-                src={item.url}
-                alt={item.file}
-                className="w-16 h-16 object-contain cursor-pointer"
-                // onClick={() => {
-                //   setZoomItem(item);
-                //   setZoomIndex(index);
-                // }}
-                onClick={() => {
-                  const currentList = serializablePhotos.filter(
-                    i => i.type === item.type
-                  );
-
-                  const indexInList = currentList.findIndex(
-                    i => i._id === item._id
-                  );
-
-                  if (indexInList === -1) {
-                    console.error("Item not found in list", item, currentList);
-                    return;
-                  }
-
-                  setDialogList(currentList);
-                  fetchPhotoById(item._id, indexInList);
-                }}
-              />
-            )
-          ),
-        })),
+      setPhotos((prev) =>
+        page === 1 ? newPhotos : [...prev, ...newPhotos]
       );
-      window.electronAPI.setStore("syncphotos", serializablePhotos);
-    } catch (error) {
-      const cachedSummary = await window.electronAPI.getStore("syncphotos");
-      if (cachedSummary) {
-        setTableData(cachedSummary);
-        // console.log(cachedSummary);
-      }
+
+      setHasMore(newPhotos.length === 20);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -219,88 +182,6 @@ function SyncPhotos() {
     await startUpload(selected, updateUploadState, setStatus);
   };
 
-  const columns = [
-    {
-      name: "preview",
-      label: "Preview",
-    },
-    {
-      name: "file",
-      label: "File",
-    },
-    {
-      name: "status",
-      label: "Status",
-      options: {
-        customBodyRender: (value) => {
-          let bgColor = "bg-bgred";
-          let textColor = "text-red";
-          let border = "border-red";
-
-          if (value === "Completed") {
-            bgColor = "bg-green-500";
-            textColor = "text-white";
-            border = "border-green-500";
-          } else if (value === "Failed") {
-            bgColor = "bg-bgred";
-            textColor = "text-white";
-            border = "border-red";
-          } else if (value === "Duplicate") {
-            bgColor = "bg-yellow-500";
-            textColor = "text-white";
-            border = "border-yellow-500";
-          } else if (value === "Pending") {
-            bgColor = "bg-blue";
-            textColor = "text-white";
-            border = "border-blue";
-          }
-
-          return (
-            <span
-              className={`${bgColor} ${textColor} border ${border} px-2 py-1 capitalize rounded-full font-medium`}
-            >
-              {value}
-            </span>
-          );
-        },
-      },
-    },
-    {
-      name: "reason",
-      label: "Reason",
-    },
-    {
-      name: "time",
-      label: "Time",
-    },
-    {
-      name: "_id",
-      label: "Action",
-      options: {
-        customBodyRender: (value) => {
-          return (
-            <button
-              className="text-red-600"
-              onClick={() => handleDelete(value)}
-            >
-              <DeleteIcon />
-            </button>
-          );
-        },
-      },
-    },
-  ];
-
-  const options = {
-    filter: false,
-    search: false,
-    pagination: false,
-    viewColumns: false,
-    print: false,
-    download: false,
-    selectableRows: "none",
-  };
-
   const handleDelete = async (id) => {
     // console.log(id);
     Swal.fire({
@@ -319,7 +200,7 @@ function SyncPhotos() {
               "ngrok-skip-browser-warning": "69420",
             },
           });
-          toast.success("Photo deleted successfully");
+          toast.success("File deleted successfully");
           await fetchPhoto();
         } catch (err) {
           toast.error(err?.response?.data?.message || "Something went wrong");
@@ -329,25 +210,24 @@ function SyncPhotos() {
     });
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const handleBack = () => {
     navigate(-1);
   };
 
-  const filteredData = tableData.filter((item) => {
-    return item.type === mediaFilter;
-  });
+  // -------------------------
+  // REFRESH
+  // -------------------------
+  const handleRefresh = () => {
+    setPhotos([]);
+    setCurrentPage(1);
+    setHasMore(true);
+    fetchPhoto(1);
+  };
 
 
-
+  // -------------------------
+  // HELPERS
+  // -------------------------
   const getCleanUrl = (url) => (url ? url.split("?")[0] : "");
 
   const isImage = (file) => {
@@ -364,6 +244,7 @@ function SyncPhotos() {
 
   return (
     <>
+    <ToastContainer/>
       <style>
         {`
             .no-shadow {
@@ -419,58 +300,140 @@ function SyncPhotos() {
           >
             {status === "loading" || videoStatus === "loading" ? "Uploading..." : "Upload Folder"}
           </button> */}
-            <div className="flex justify-end items-center mt-1 text-md font-semibold text-slate-700">
-              <p>Total: {totalphoto}</p>
+          </div>
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center gap-3">
+            <div className="flex justify-end items-center text-md font-semibold text-slate-700">
+              <p>Total {mediaFilter === "image" ? "Image" : "Video"}: {filteredData.length}</p>
             </div>
-            <div className="flex justify-end items-center  mt-2 text-lg font-semibold text-slate-700">
-              <p
-                className="cursor-pointer px-2  border border-slate-400 rounded"
-                onClick={() => fetchPhoto()}
-              >
-                Refresh <RefreshIcon />
-              </p>
-            </div>
-            <div className="flex gap-2 mt-4">
+            <button
+              className="py-1 px-2 border border-slate-400 rounded"
+              onClick={handleRefresh}
+            >
+              Refresh <RefreshIcon sx={{ fontSize: 20 }} />
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setMediaFilter("image")}
+              className={`px-4 py-1 rounded ${mediaFilter === "image" ? "bg-blue text-white" : "bg-gray-200"}`}
+            >
+              Images
+            </button>
 
-              <button
-                onClick={() => setMediaFilter("image")}
-                className={`px-4 py-1 rounded ${mediaFilter === "image" ? "bg-blue text-white" : "bg-gray-200"}`}
-              >
-                Images
-              </button>
-
-              <button
-                onClick={() => setMediaFilter("video")}
-                className={`px-4 py-1 rounded ${mediaFilter === "video" ? "bg-blue text-white" : "bg-gray-200"}`}
-              >
-                Videos
-              </button>
-            </div>
+            <button
+              onClick={() => setMediaFilter("video")}
+              className={`px-4 py-1 rounded ${mediaFilter === "video" ? "bg-blue text-white" : "bg-gray-200"}`}
+            >
+              Videos
+            </button>
           </div>
         </div>
 
         <SyncVideos videoUploadMode={videoUploadMode} setVideoUploadMode={setVideoUploadMode} />
 
+        <div className="mt-5 overflow-hidden">
+          {/* TABLE HEADER */}
+          <div className="grid grid-cols-6 bg-gray-50 font-semibold p-3 sticky top-0 ">
+            <div>Preview</div>
+            <div>File</div>
+            <div>Type</div>
+            <div>Status</div>
+            <div>Time</div>
+            <div>Action</div>
+          </div>
 
-        <MUIDataTable
+          {/* TABLE BODY */}
+           {filteredData.length === 0 && !loading ? (
+    <div className="text-center py-6 text-gray-500">
+      No data found
+    </div>
+  ) : (
+          <div className="">
+            {filteredData.map((item, index) => {
+              const isLast = index === filteredData.length - 1;
+
+              return (
+                <div
+                  key={item._id}
+                  ref={isLast ? lastElementRef : null}
+                  className="grid grid-cols-6 items-center p-3 border-b hover:bg-gray-50 cursor-pointer"
+                  onClick={() => {
+                    const list = filteredData;
+                    const i = list.findIndex((x) => x._id === item._id);
+                    setDialogList(list);
+                    fetchPhotoById(item._id, i);
+                  }}
+                >
+                  {/* PREVIEW */}
+                  <div>
+                    {item.type === "image" ? (
+                      <img
+                        src={item.url}
+                        className="w-16 h-16 object-cover rounded"
+                        alt=""
+
+                      />
+                    ) : (
+                      <div className="relative w-16 h-16">
+                        <video
+                          src={item.url}
+                          className="w-full h-full object-cover rounded"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-xs rounded">
+                          ▶
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* FILE */}
+                  <div className="truncate text-sm">{item.file}</div>
+
+                  {/* TYPE */}
+                  <div className="capitalize text-sm">{item.type}</div>
+
+                  {/* SIZE */}
+                  <div className="text-sm ">{item.size}</div>
+
+                  {/* TIME */}
+                  <div className="text-sm">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </div>
+
+                  {/* ACTION */}
+                  <div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(item._id);
+                      }}
+                      className="text-red-500 hover:underline text-sm"
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* LOADER INSIDE TABLE */}
+            {loading && (
+              <div className="flex justify-center p-4">
+                <CircularProgress size={25} />
+              </div>
+            )}
+          </div>
+  )}
+        </div>
+        {/* <MUIDataTable
           data={filteredData}
           columns={columns}
           options={options}
           className="no-shadow bg-white dark:bg-slate-800 dark:text-white mt-5"
-        />
-        <div>
-          <TablePagination
-            component="div"
-            count={pagination.total}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            rowsPerPageOptions={[10, 15, 20, 50, 100]}
-            showLastButton
-            className="bg-white text-black dark:bg-slate-800 dark:text-white"
-          />
-        </div>
+        /> */}
+
       </div>
 
       {/* <Dialog open={!!zoomItem} onClose={() => setZoomItem(null)} maxWidth="md">
