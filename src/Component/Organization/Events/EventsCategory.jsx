@@ -7,7 +7,7 @@ import { CircularProgress } from "@mui/material";
 import demo from "../../image/demo.jpg";
 import { OrganizationEventContext } from "../Context/OrganizationEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,

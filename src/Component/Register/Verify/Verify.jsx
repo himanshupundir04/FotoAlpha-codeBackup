@@ -7,7 +7,7 @@ import bgimg from "../../image/login-bg.png";
 import { toast } from "react-toastify";
 import PhoneInput from "react-phone-input-2";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Verify() {
   const navigate = useNavigate();

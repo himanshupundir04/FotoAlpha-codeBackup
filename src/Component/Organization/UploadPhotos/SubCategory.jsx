@@ -3,7 +3,7 @@ import axios from "axios";
 import Select from "react-select";
 import { OrganizationPortfolioContext } from "../Context/PortfolioContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function SubCategory() {
   const [event, setEvent] = useState([]);

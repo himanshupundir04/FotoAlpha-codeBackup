@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://fotoalpha.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://fotoalpha.com";
 
 // Create axios instance with default headers
 const apiClient = axios.create({

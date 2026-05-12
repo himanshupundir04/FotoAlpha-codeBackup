@@ -10,7 +10,7 @@ import { useFormik } from "formik";
 import Calculateprice from "./Calculateprice";
 import * as yup from "yup";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function UpgradePlan() {
   const users = JSON.parse(localStorage.getItem("users")) || [];

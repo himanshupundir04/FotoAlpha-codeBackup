@@ -17,7 +17,7 @@ const style = {
   },
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function AddSubEvent({ open, handleClose, fetchSubevent }) {
   const [loading, setLoading] = useState(false);
   const [subcategory, setSubcategory] = useState([]);

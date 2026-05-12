@@ -21,7 +21,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Slider from "react-slick";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Images({ folders, fetchFolder }) {
   const token = localStorage.getItem("token");

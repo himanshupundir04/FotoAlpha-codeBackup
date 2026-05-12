@@ -20,7 +20,7 @@ const style = {
   boxShadow: 24,
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function EditTeamMember({ open, handleClose, id, fetchTeam }) {
   const [loading, setLoading] = useState(false);

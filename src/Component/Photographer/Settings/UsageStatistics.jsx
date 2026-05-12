@@ -17,7 +17,7 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { useNavigate } from "react-router-dom";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const UsageStatistics = () => {
   const [usageData, setUsageData] = useState(null);

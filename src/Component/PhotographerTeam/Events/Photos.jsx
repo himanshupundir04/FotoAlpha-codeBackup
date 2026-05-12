@@ -9,7 +9,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Photos() {
   const [opend, setOpen] = useState(false);

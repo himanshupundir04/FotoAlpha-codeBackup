@@ -30,7 +30,7 @@ import {
 } from "recharts";
 import { PhotographerEventContext } from "../../Context/PhotographerEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function Main() {
   const [summary, setSummary] = useState({});
   const [recentevent, setRecentevent] = useState([]);

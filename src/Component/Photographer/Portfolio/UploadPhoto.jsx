@@ -22,7 +22,7 @@ const style = {
   overflow: "auto",
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const MAX_UPLOAD_IMAGES = 10;
 function UploadPhoto({ open, handleClose, fetchPhotos }) {
   const token = localStorage.getItem("token");

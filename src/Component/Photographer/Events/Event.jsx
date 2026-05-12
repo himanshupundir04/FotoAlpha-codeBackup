@@ -12,7 +12,7 @@ import demo from "../../image/demo.jpg";
 import { toast, ToastContainer } from "react-toastify";
 import { PhotographerEventContext } from "../Context/PhotographerEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Event() {
   const navigate = useNavigate();

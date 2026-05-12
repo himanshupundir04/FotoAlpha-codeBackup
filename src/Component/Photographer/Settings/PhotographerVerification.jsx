@@ -18,7 +18,7 @@ import Passport from "../../image/passport.jpg";
 import { toast } from "react-toastify";
 const MAX_SIZE = 10 * 1024 * 1024;
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "application/pdf"];
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "pdf"];
 const DOC_LABELS = {

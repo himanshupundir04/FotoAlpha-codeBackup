@@ -18,8 +18,8 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import XIcon from "@mui/icons-material/X";
 import { PhotographerTeamEventContext } from "../Context/PhotographerTeamEventContext";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
-const baseurlFront = process.env.REACT_APP_FRONT_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
+const baseurlFront = import.meta.env.VITE_FRONT_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",

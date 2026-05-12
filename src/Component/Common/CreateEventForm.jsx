@@ -37,7 +37,7 @@ import {
 import PhoneInput from "react-phone-input-2";
 import { toast } from "react-toastify";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,

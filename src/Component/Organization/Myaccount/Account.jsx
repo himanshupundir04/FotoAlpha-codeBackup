@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import demo from "../../image/profile-avatar.jpg";
 import PhoneInput from "react-phone-input-2";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Account() {
   const [loading, setLoading] = useState(false);

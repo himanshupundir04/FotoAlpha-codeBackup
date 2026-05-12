@@ -4,7 +4,7 @@ import { PhotographerTeamEventContext } from "../Context/PhotographerTeamEventCo
 import demo from "../../image/demo.jpg";
 import axios from "axios";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function Subevent() {
   const { photographerteamevent } = useContext(PhotographerTeamEventContext);
   const navigate = useNavigate();

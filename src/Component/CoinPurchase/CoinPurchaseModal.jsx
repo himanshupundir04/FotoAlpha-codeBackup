@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ShoppingCart, Zap, HardDrive, Calendar, Users, Package } from "lucide-react";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CoinPurchaseModal = ({ fetchCoinData }) => {
   const [features, setFeatures] = useState({});

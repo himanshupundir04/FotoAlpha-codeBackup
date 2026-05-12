@@ -19,7 +19,7 @@ export const bgWatcherService = {
   async add({ folderPath, eventId, subeventId, eventName, categoryName, role }) {
     if (!api()) return false;
     const token  = localStorage.getItem("token") || "";
-    const apiUrl = process.env.REACT_APP_BASE_URL || "";
+    const apiUrl = import.meta.env.VITE_BASE_URL || "";
     return api().bgWatcherAdd({
       folderPath,
       eventId:      typeof eventId === "object" ? eventId?.value : eventId,

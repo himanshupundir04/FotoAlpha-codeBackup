@@ -6,7 +6,7 @@ import PhoneInput from "react-phone-input-2";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { Skeleton } from "@mui/material";
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const nameRegex = /^[A-Za-z\s]+$/;
 
 const validationSchema = Yup.object({

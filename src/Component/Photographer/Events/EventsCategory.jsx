@@ -9,7 +9,7 @@ import { PhotographerEventContext } from "../Context/PhotographerEventContext";
 import BoltIcon from "@mui/icons-material/Bolt";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,

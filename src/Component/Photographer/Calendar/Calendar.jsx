@@ -14,11 +14,11 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { enUS } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 
-// Locale setup
 const locales = {
-  "en-US": require("date-fns/locale/en-US"),
+  "en-US": enUS,
 };
 
 const localizer = dateFnsLocalizer({
@@ -98,7 +98,7 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const modalStyle = {
   position: 'absolute',

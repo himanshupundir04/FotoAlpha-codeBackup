@@ -7,7 +7,7 @@ import OTPInput from "react-otp-input";
 import PhoneInput from "react-phone-input-2";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function LoginForm({ handleClose }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

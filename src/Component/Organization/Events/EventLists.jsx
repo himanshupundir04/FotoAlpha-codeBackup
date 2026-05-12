@@ -15,7 +15,7 @@ import Swal from "sweetalert2";
 import { format } from "date-fns";
 import SearchIcon from "@mui/icons-material/Search";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 function EventLists() {
   const [loading, setLoading] = useState(false);
   const [permission, setPermission] = useState(false);

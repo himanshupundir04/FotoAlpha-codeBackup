@@ -4,7 +4,7 @@ import { CircularProgress } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const FILTERS = [
   { id: "pending", label: "Pending" },

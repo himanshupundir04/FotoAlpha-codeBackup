@@ -32,7 +32,7 @@ const style = {
   px: 4,
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function AsignMember({ open, handleClose, fetchteam }) {
   const [personName, setPersonName] = useState([]);

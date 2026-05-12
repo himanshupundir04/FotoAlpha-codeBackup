@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import Slider from "react-slick";
 import demo from "../../image/demo.jpg";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const steps = ["Select Event", "Select SubCategory", "Uplaod Photos"];
 

@@ -51,7 +51,7 @@ async function setQueue(queue) {
 }
 
 async function healthPing(apiUrl) {
-  const base = apiUrl || process.env.REACT_APP_BASE_URL;
+  const base = apiUrl || import.meta.env.VITE_BASE_URL;
   try {
     const axios = (await import("axios")).default;
     const res = await axios.get(`${base}/health`, { timeout: 5000 });
@@ -196,7 +196,7 @@ export const desktopUploadService = {
     } catch { return null; }
 
     const fileId = `${Date.now()}_${fileName}`;
-    const apiBase = apiUrl || process.env.REACT_APP_BASE_URL;
+    const apiBase = apiUrl || import.meta.env.VITE_BASE_URL;
     const authToken = token || localStorage.getItem("token");
 
     const queueItem = {
@@ -255,7 +255,7 @@ export const desktopUploadService = {
       }
       lastOnlineEvent = now;
 
-      const apiBase = apiUrl || process.env.REACT_APP_BASE_URL;
+      const apiBase = apiUrl || import.meta.env.VITE_BASE_URL;
       const authToken = token || localStorage.getItem("token");
 
       const online = await healthPing(apiBase);

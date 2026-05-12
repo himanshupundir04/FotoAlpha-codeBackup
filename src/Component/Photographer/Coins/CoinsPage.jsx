@@ -4,7 +4,7 @@ import axios from "axios";
 import CoinPurchaseModal from "../../CoinPurchase/CoinPurchaseModal";
 import { PhotographerEventContext } from "../Context/PhotographerEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CoinsPage = () => {
   const [coinBalance, setCoinBalance] = useState({

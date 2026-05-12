@@ -25,7 +25,7 @@ import { PieChart, pieArcLabelClasses } from "@mui/x-charts";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { OrganizationEventContext } from "../../Context/OrganizationEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function Main() {
   const [summary, setSummary] = useState({});
   const [recentevent, setRecentevent] = useState([]);

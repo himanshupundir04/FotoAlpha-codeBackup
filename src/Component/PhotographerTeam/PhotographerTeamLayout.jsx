@@ -13,7 +13,7 @@ import { useVideoUploadWatcher } from "./Context/useTeamVideoUploadWatcher";
 import { UploadContext } from "./Context/UploadContext";
 import { UploadVideoContext } from "./Context/UploadTeamVideoContext";
 
-// const baseurl = process.env.REACT_APP_BASE_URL;
+// const baseurl = import.meta.env.VITE_BASE_URL;
 
 function PhotographerTeamLayout() {
   const [isOpen, setIsOpen] = useState(false);

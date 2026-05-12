@@ -5,7 +5,7 @@ import { PlanContext } from "../../../Context/PlanContext";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const PayRozeer = ({ open, handleClose, order }) => {
   const { planid, year, filldetail, pricedetail } = useContext(PlanContext);

@@ -7,7 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { OrganizationEventContext } from "../../Context/OrganizationEventContext";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Notification() {
   const token = localStorage.getItem("token");

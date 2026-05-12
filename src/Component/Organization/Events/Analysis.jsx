@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import demo from "../../image/demo.jpg"
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 function Analysis() {
   const token = localStorage.getItem("token");
   const [data, setData] = useState();

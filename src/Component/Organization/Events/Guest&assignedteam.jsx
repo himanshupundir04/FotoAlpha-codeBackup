@@ -24,7 +24,7 @@ const style = {
   py: 2,
   px: 4,
 };
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 function Guestassignedteam() {
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState("assigned");

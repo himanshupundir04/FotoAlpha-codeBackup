@@ -7,7 +7,7 @@ import axios from "axios";
 
 // This component should be integrated into your existing Header.jsx
 // Place this alongside your existing upgrade button
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CoinBalanceDisplay = ({ token, onClick }) => {
   const [coinBalance, setCoinBalance] = useState(0);

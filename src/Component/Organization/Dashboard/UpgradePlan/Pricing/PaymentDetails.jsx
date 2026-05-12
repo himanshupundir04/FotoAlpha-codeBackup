@@ -31,7 +31,7 @@ const style = {
   },
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function PaymentDetails({ payopen, payclose, discountamnt }) {
   const token = localStorage.getItem("token");
   const { plan, year, planid, setPlan,type, setType } = useContext(PlanContext);

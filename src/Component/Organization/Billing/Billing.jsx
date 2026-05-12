@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Billing() {
   const [billingData, setBillingData] = useState();

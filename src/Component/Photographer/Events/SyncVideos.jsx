@@ -8,7 +8,7 @@ import { UploadVideoContext } from "../Context/UploadVideoContext";
 import { PortfolioContext } from "../Context/PortfolioContext";
 import { useParams } from "react-router-dom";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function SyncVideos({ videoUploadMode, setVideoUploadMode }) {
   const { uploadVideoState, updateUploadVideoState, videoStatus,setEventid, setSubeventid } =

@@ -7,7 +7,7 @@ import axios from "axios";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import AddSubEvent from "./AddSubEvent";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Photos() {
   const { portfolioevent } = useContext(PortfolioEventContext);

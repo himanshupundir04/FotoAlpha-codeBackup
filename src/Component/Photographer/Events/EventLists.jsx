@@ -22,7 +22,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { toast } from "react-toastify";
 import { PortfolioEventContext } from "../Context/PortfolioEventContext"
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 function EventLists() {
    const location = useLocation();
   const params = new URLSearchParams(location.search);

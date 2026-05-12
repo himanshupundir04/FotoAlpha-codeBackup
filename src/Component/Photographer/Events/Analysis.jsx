@@ -16,7 +16,7 @@ import {
 
 import { PhotographerEventContext } from "../Context/PhotographerEventContext";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Analysis() {
   const token = localStorage.getItem("token");

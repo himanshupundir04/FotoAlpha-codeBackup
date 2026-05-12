@@ -18,7 +18,7 @@ const style = {
   boxShadow: 24,
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function Calculateprice({ open, handleClose }) {
   const { setPlan, setYear, setPlanid, pricedetail, filldetail,setType } =
     useContext(PlanContext);

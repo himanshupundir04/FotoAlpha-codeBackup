@@ -10,7 +10,7 @@ import { CircularProgress } from "@mui/material";
 import UsageStatistics from "./UsageStatistics";
 import PhotographerVerification from "./PhotographerVerification";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Settings() {
     const tab = localStorage.getItem("tab");

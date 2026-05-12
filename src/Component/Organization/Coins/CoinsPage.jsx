@@ -3,7 +3,7 @@ import { Coins, TrendingUp, TrendingDown, Download } from "lucide-react";
 import axios from "axios";
 import CoinPurchaseModal from "../../CoinPurchase/CoinPurchaseModal";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const CoinsPage = () => {
   const [coinBalance, setCoinBalance] = useState({

@@ -8,7 +8,7 @@ import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import ReviewsOutlinedIcon from "@mui/icons-material/ReviewsOutlined";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const clampRating = (value) => {
   const parsed = Number(value);

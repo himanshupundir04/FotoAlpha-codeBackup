@@ -12,7 +12,7 @@ import PaymentManagement from "./PaymentManagement";
 import InvitationCard from "./InvitationCard";
 import PhotosRequest from "./PhotosRequest";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function SingleEvent() {
   const [activeTab, setActiveTab] = useState("photos");

@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Box, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",

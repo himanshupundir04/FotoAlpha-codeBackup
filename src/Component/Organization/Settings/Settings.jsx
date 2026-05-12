@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import UsageStatistics from "./UsageStatistics";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Settings() {
     const tab = localStorage.getItem("tab");

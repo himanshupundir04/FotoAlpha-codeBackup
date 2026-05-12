@@ -28,7 +28,7 @@ const style = {
     md: 4,
   },
 };
-const baseurl = process.env.REACT_APP_BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 function Connected({ open, handleClose }) {
   const [loading, setLoading] = useState(false);

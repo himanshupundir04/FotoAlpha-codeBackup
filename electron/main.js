@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
 const {
@@ -42,7 +43,7 @@ registerSystemHandlers();
 registerFileOpHandlers();
 registerWatcherHandlers();
 registerVideoHandlers();
-registerUploadEngineHandlers(process.env.REACT_APP_BASE_URL);
+registerUploadEngineHandlers(process.env.VITE_BASE_URL);
 registerBackgroundWatcherHandlers();
 
 ipcMain.handle("tray:get-pending-count", async () => {

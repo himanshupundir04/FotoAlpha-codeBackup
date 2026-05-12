@@ -6,7 +6,7 @@ import axios from "axios";
 import { PhotographerTeamEventContext } from "../Context/PhotographerTeamEventContext";
 import Subevent from "./Subevent";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function SingleEvent() {
   const [activeTab, setActiveTab] = useState("photos");

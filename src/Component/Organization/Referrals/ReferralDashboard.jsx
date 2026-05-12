@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CircleIcon, Copy, Share2, Download, Zap } from "lucide-react";
 import axios from "axios";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const ReferralDashboard = () => {
   const [referralCode, setReferralCode] = useState("");

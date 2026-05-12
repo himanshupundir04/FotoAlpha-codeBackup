@@ -11,7 +11,7 @@ import countryList from "react-select-country-list";
 import { Box, Modal } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",

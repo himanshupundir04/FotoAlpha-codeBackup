@@ -31,7 +31,7 @@ import { Download } from "@mui/icons-material";
 import HideImageOutlinedIcon from "@mui/icons-material/HideImageOutlined";
 import albumbg from "../../image/albumbg.png"
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const style = {
   position: "absolute",

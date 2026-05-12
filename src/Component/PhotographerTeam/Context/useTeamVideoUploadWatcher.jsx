@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import { UploadVideoContext } from "./UploadTeamVideoContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const MAX_CONCURRENT_UPLOADS = 2;
 
 export const useVideoUploadWatcher = ({ folderPath }) => {

@@ -25,7 +25,7 @@ const style = {
   py: 2,
   px: 4,
 };
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 function Guestassignedteam({ initialView = "assigned" }) {
   const getViewFromInput = (value) => {
     const normalizedView = String(value || "").toLowerCase();

@@ -7,7 +7,7 @@ import OTPInput from "react-otp-input";
 import axios from "axios";
 import { EmailContext } from "../Context/EmailContext";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function VerifyOTP() {
   const [loading, setLoading] = useState();

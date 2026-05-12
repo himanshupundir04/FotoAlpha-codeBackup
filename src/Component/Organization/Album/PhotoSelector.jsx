@@ -16,7 +16,7 @@ import DragHandleIcon from "@mui/icons-material/DragHandle";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const PhotoSelector = ({ eventId, selectedPhotos, onPhotosChange, token }) => {
   const [photos, setPhotos] = useState([]);

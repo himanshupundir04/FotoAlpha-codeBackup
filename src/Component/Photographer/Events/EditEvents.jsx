@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import { PortfolioEventContext } from "../Context/PortfolioEventContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function EditEvents() {
   const { portfolioevent } = useContext(PortfolioEventContext);

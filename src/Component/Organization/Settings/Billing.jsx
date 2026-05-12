@@ -12,7 +12,7 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { SubscriptIcon } from "lucide-react";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 const token = localStorage.getItem("token");
 function Billing({ paydata }) {
   const [loading, setLoading] = useState(false);

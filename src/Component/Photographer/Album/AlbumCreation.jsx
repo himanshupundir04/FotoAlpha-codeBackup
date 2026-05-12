@@ -32,7 +32,7 @@ import PhotoSelector from "./PhotoSelector";
 import FlipbookBuilder from "./FlipbookBuilder";
 import AlbumPreview from "./AlbumPreview";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 const steps = ["Choose Template", "Select Photos", "Design Flipbook", "Customize", "Preview"];
 

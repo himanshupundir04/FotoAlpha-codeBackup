@@ -7,7 +7,7 @@ import BoltIcon from "@mui/icons-material/Bolt";
 import AddIcon from "@mui/icons-material/Add";
 import demo from "../../image/demo.jpg"
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function Album() {
   const [event, setEvent] = useState([]);

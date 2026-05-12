@@ -23,7 +23,7 @@ const style = {
   border: "1px solid #fff",
 };
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function UploadPhoto({ open, handleClose, fetchPhotos }) {
   const token = localStorage.getItem("token");
   const [uploadloading, setUploadLoading] = useState(false);

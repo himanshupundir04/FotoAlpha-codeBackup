@@ -31,7 +31,7 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import { format } from "date-fns";
 import Swal from "sweetalert2";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 function Header() {
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("theme") === "dark"

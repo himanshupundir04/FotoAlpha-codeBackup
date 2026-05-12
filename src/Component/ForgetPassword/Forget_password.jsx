@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { EmailContext } from "../Context/EmailContext";
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
 function ForgetPassword() {
   const [loading, setLoading] = useState(false);

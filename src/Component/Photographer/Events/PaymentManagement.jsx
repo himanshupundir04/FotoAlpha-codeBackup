@@ -15,7 +15,7 @@ import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 
-const baseUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function PaymentManagement() {
   const token = localStorage.getItem("token");
