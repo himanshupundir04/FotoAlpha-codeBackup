@@ -42,10 +42,10 @@ function Team() {
       setTeam(response?.data?.users);
       // console.log(response.data.users);
       setLoading(false);
-      window.electronAPI.setStore("team", response.data.users);
+      window.electronAPI?.setStore("team", response.data.users);
     } catch (error) {
       setLoading(false);
-      const cachedSummary = await window.electronAPI.getStore("team");
+      const cachedSummary = await window.electronAPI?.getStore("team");
       if (cachedSummary) {
         setTeam(cachedSummary);
         // console.log(cachedSummary);

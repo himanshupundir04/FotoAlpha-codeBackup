@@ -29,10 +29,10 @@ function Account() {
       setProfile(response?.data);
       localStorage.setItem("avatar", response?.data?.avatarUrl);
       // console.log(response.data);
-      window.electronAPI.setStore("setting", response?.data);
+      window.electronAPI?.setStore("setting", response?.data);
     } catch (error) {
       console.log(error);
-      const cachedSummary = await window.electronAPI.getStore("settings");
+      const cachedSummary = await window.electronAPI?.getStore("settings");
       if (cachedSummary) {
         setProfile(cachedSummary);
         // console.log(cachedSummary);

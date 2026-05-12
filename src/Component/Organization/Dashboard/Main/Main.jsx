@@ -18,6 +18,7 @@ import {
   useTheme,
   Popover,
 } from "@mui/material";
+import { formatFileSize } from "../../../Common/utils";
 import CloseIcon from "@mui/icons-material/Close";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts";
@@ -75,24 +76,24 @@ function Main() {
       //   setShow(true);
       // }
       // console.log(response.data.recentAuditLogs);
-      window.electronAPI.setStore("summary", response?.data);
-      window.electronAPI.setStore(
+      window.electronAPI?.setStore("summary", response?.data);
+      window.electronAPI?.setStore(
         "upcommingevent",
         response?.data?.recentUpcomingEvents
       );
-      window.electronAPI.setStore("audit", response?.data?.recentAuditLogs);
-      window.electronAPI.setStore(
+      window.electronAPI?.setStore("audit", response?.data?.recentAuditLogs);
+      window.electronAPI?.setStore(
         "nextevent",
         response?.data?.nextSevenDaysEvents
       );
     } catch (error) {
       setDataload(false);
-      const cachedSummary = await window.electronAPI.getStore("summary");
-      const upcommingevent = await window.electronAPI.getStore(
+      const cachedSummary = await window.electronAPI?.getStore("summary");
+      const upcommingevent = await window.electronAPI?.getStore(
         "upcommingevent"
       );
-      const audit = await window.electronAPI.getStore("audit");
-      const next = await window.electronAPI.getStore("nextevent");
+      const audit = await window.electronAPI?.getStore("audit");
+      const next = await window.electronAPI?.getStore("nextevent");
 
       setSummary(cachedSummary);
       setRecentevent(upcommingevent || []);
@@ -135,9 +136,9 @@ function Main() {
       if (response.data.events.length === 0) {
         setShow(true);
       }
-      window.electronAPI.setStore("allevent", response?.data?.events);
+      window.electronAPI?.setStore("allevent", response?.data?.events);
     } catch (error) {
-      const allevent = await window.electronAPI.getStore("allevent");
+      const allevent = await window.electronAPI?.getStore("allevent");
 
       setAllEvents(allevent);
       console.log(error.response?.data?.message);
@@ -186,15 +187,6 @@ function Main() {
     navigate(`/organization/search/${searchTerm}`);
   };
 
-  function formatFileSize(bytes) {
-    if (!bytes || isNaN(bytes)) return "0 B";
-
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const size = bytes / Math.pow(1024, i);
-
-    return `${size.toFixed(2)} ${sizes[i]}`;
-  }
 
   const today = startOfDay(new Date());
   const nextSevenDays = Array.from({ length: 7 }, (_, i) => {

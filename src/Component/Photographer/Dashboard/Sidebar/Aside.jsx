@@ -23,6 +23,7 @@ import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import PrintIcon from "@mui/icons-material/Print";
+import SyncIcon from "@mui/icons-material/Sync";
 
 function Aside({ setIsOpen, isOpen }) {
   const location = useLocation();
@@ -354,6 +355,18 @@ function Aside({ setIsOpen, isOpen }) {
               )}
             </Link>
             <Link
+              to="sync_watchers"
+              className={`flex items-center space-x-2 p-2 rounded font-normal no-underline ${
+                isActive("sync_watchers")
+                  ? "bg-blue text-white"
+                  : "text-slate-700 dark:!text-white hover:bg-slate-300 dark:hover:bg-gray-700"
+              }`}
+              onClick={() => { if (window.innerWidth < 1024) setIsOpen(false); }}
+            >
+              <SyncIcon sx={{ fontSize: 20 }} />
+              {(!isOpen || window.innerWidth < 1024) && <span className="text-base">Sync Watchers</span>}
+            </Link>
+            <Link
               to="settings"
               className={`flex items-center space-x-2 p-2 rounded font-normal  no-underline ${isActive("settings")
                   ? "bg-blue text-white"
@@ -361,7 +374,6 @@ function Aside({ setIsOpen, isOpen }) {
                 }`}
               onClick={() => {
                 if (window.innerWidth < 1024) {
-                  // ✅ only close on mobile (Tailwind md breakpoint)
                   setIsOpen(false);
                 }
               }}

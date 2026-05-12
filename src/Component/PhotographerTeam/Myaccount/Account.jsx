@@ -46,9 +46,9 @@ function Account() {
         },
       });
       setProfile(response.data);
-      window.electronAPI.setStore("profile", response.data);
+      window.electronAPI?.setStore("profile", response.data);
     } catch (error) {
-      const cachedSummary = await window.electronAPI.getStore("profile");
+      const cachedSummary = await window.electronAPI?.getStore("profile");
       if (cachedSummary) {
         setProfile(cachedSummary);
       }

@@ -25,12 +25,12 @@ function SubCategory() {
         },
       });
       setEvent(response.data.event.timeSlots);
-      window.electronAPI.setStore(
+      window.electronAPI?.setStore(
         "uplaodSubCate",
         response.data.event.timeSlots
       );
     } catch (error) {
-      const cachedSummary = await window.electronAPI.getStore("uplaodSubCate");
+      const cachedSummary = await window.electronAPI?.getStore("uplaodSubCate");
       if (cachedSummary) {
         setEvent(cachedSummary);
       }

@@ -35,13 +35,13 @@ function Photos() {
       );
       // console.log("sub", response.data?.event?.timeSlots);
       setSlots(response?.data?.event?.timeSlots);
-      window.electronAPI.setStore(
+      window.electronAPI?.setStore(
         "categoryslot",
         response?.data?.event?.timeSlots
       );
     } catch (error) {
       console.log(error);
-      const cachedSummary = window.electronAPI.getStore("categoryslot");
+      const cachedSummary = window.electronAPI?.getStore("categoryslot");
       setSlots(cachedSummary);
     }
   };

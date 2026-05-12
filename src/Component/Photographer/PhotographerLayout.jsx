@@ -69,10 +69,11 @@ function PortfolioLayout() {
   });
 
   const cleanupUploads = () => {
-    window.electronAPI.cancelUploadProcessing();
-    window.electronAPI.deleteCompressed();
-    window.electronAPI.stopWatchingFolder?.();
-    window.electronAPI.removeListeners?.();
+    if (!window.electronAPI) return;
+    window.electronAPI?.cancelUploadProcessing();
+    window.electronAPI?.deleteCompressed();
+    window.electronAPI?.stopWatchingFolder?.();
+    window.electronAPI?.removeListeners?.();
   };
 
   useEffect(() => {
@@ -106,8 +107,9 @@ function PortfolioLayout() {
   }, []);
 
   useEffect(() => {
+    if (!window.electronAPI) return;
     const interval = setInterval(async () => {
-      const data = await window.electronAPI.getSystemStats();
+      const data = await window.electronAPI?.getSystemStats();
       setStats(data);
     }, 1000);
 
@@ -115,8 +117,9 @@ function PortfolioLayout() {
   }, []);
 
   useEffect(() => {
+    if (!window.electronAPI) return;
     const interval = setInterval(async () => {
-      const speed = await window.electronAPI.getNetworkSpeed();
+      const speed = await window.electronAPI?.getNetworkSpeed();
       setNetworkSpeed(speed);
     }, 1000);
 
@@ -163,30 +166,18 @@ function PortfolioLayout() {
         setTotal(0);
         setUploaded(0);
         setDuplicate(0);
-        window.electronAPI.deleteFolder(compressedFolder);
+        window.electronAPI?.deleteFolder(compressedFolder);
       }
     });
   };
 
   useEffect(() => {
     if (total > 0 && uplaoded + duplicate + failed === total) {
-      cleanupUploads();
       setStatus("completed");
-      const compressedFolder = `${uploadState.folderPath}/compressed`;
-      setSubId("");
-      setEventId("");
-      setEventsid("");
-      setSubeventsid("");
       setError("");
       setSavedStep(0);
       setFailed(0);
-      setTimeout(() => {
-        setTotal(0);
-        setUploaded(0);
-        setDuplicate(0);
-        window.electronAPI.deleteFolder(compressedFolder);
-        setOpensnak(true);
-      }, 2000);
+      setOpensnak(true);
     }
   }, [uplaoded, total, duplicate, failed]);
 
@@ -228,8 +219,8 @@ function PortfolioLayout() {
         setBack(true);
         setSavedStep(0);
         setVideos([]);
-        window.electronAPI.deleteFolder(compressedFolder);
-        window.electronAPI.cancelVideoCompress();
+        window.electronAPI?.deleteFolder(compressedFolder);
+        window.electronAPI?.cancelVideoCompress();
         setVideoFailed(0);
         setOpensnak(true);
       }, 2000);
@@ -248,8 +239,8 @@ function PortfolioLayout() {
     }).then((result) => {
       if (result.isConfirmed) {
         const compressedFolder = `${uploadVideoState.folderPath}/compressed`;
-        window.electronAPI.deleteFolder(compressedFolder);
-        window.electronAPI.cancelVideoCompress();
+        window.electronAPI?.deleteFolder(compressedFolder);
+        window.electronAPI?.cancelVideoCompress();
         setVideoStatus("completed");
         setUploadVideoState({ folderPath: null });
         setEventid("");

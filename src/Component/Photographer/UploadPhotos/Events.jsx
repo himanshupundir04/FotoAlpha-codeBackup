@@ -53,10 +53,10 @@ function Events() {
       setLoading(false);
       setEvent(response.data.events);
       // console.log(response.data.events);
-      window.electronAPI.setStore("uplaodEvents", response.data.events);
+      window.electronAPI?.setStore("uplaodEvents", response.data.events);
     } catch (error) {
       setLoading(false);
-      const cachedSummary = await window.electronAPI.getStore("uplaodEvents");
+      const cachedSummary = await window.electronAPI?.getStore("uplaodEvents");
       if (cachedSummary) {
         setEvent(cachedSummary);
         // console.log(cachedSummary);

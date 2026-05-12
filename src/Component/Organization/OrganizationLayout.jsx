@@ -53,11 +53,11 @@ function PortfolioLayout() {
 
     useEffect(() => {
   return () => {
-    // Cleanup when leaving PortfolioLayout
-    window.electronAPI.cancelUploadProcessing();
-        window.electronAPI.deleteCompressed();
-        window.electronAPI.stopWatchingFolder?.();
-        window.electronAPI.removeListeners?.();
+    if (!window.electronAPI) return;
+    window.electronAPI?.cancelUploadProcessing();
+        window.electronAPI?.deleteCompressed();
+        window.electronAPI?.stopWatchingFolder?.();
+        window.electronAPI?.removeListeners?.();
 
     setStatus("completed");
     setTotal(0);
@@ -85,10 +85,12 @@ function PortfolioLayout() {
       confirmButtonText: "Yes, cancel it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        window.electronAPI.cancelUploadProcessing();
-        window.electronAPI.deleteCompressed();
-        window.electronAPI.stopWatchingFolder?.();
-        window.electronAPI.removeListeners?.();
+        if (window.electronAPI) {
+          window.electronAPI?.cancelUploadProcessing();
+          window.electronAPI?.deleteCompressed();
+          window.electronAPI?.stopWatchingFolder?.();
+          window.electronAPI?.removeListeners?.();
+        }
         // setHasStarted(false);
         setStatus("completed");
         setSubId("");
@@ -117,34 +119,21 @@ function PortfolioLayout() {
     setEventId("");
     setSavedStep(0);
     setStatus("completed");
-    // setHasStarted(false);
-    window.electronAPI.cancelUploadProcessing();
-    window.electronAPI.deleteCompressed();
-    window.electronAPI.stopWatchingFolder?.();
-    window.electronAPI.removeListeners?.();
+    if (window.electronAPI) {
+      window.electronAPI?.cancelUploadProcessing();
+      window.electronAPI?.deleteCompressed();
+      window.electronAPI?.stopWatchingFolder?.();
+      window.electronAPI?.removeListeners?.();
+    }
     setEventsid("");
     setSubeventsid("");
   };
 
   useEffect(() => {
     if (total > 0 && uplaoded + duplicate === total) {
-      window.electronAPI.cancelUploadProcessing();
-      window.electronAPI.deleteCompressed();
-      window.electronAPI.stopWatchingFolder?.();
-      window.electronAPI.removeListeners?.();
       setStatus("completed");
-      setSubId("");
-      setEventId("");
-      setEventsid("");
-      setSubeventsid("");
-      // setHasStarted(false);
       setSavedStep(0);
-      setTimeout(() => {
-        setTotal(0);
-        setUploaded(0);
-        setDuplicate(0);
-        setOpensnak(true);
-      }, 2000);
+      setOpensnak(true);
     }
   }, [uplaoded, total, duplicate]);
 

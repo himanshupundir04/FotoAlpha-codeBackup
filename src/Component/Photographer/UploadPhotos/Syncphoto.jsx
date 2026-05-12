@@ -5,12 +5,13 @@ import { toast } from "react-toastify";
 import ImageIcon from "@mui/icons-material/Image";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import { UploadVideoContext } from "../Context/UploadVideoContext";
+import { bgWatcherService } from "../../../services/bgWatcherService";
 
 function SyncPhotos() {
   // const [syncStatus, setSyncStatus] = useState("idle");
   const { updateUploadState } = useContext(PortfolioContext);
   const [folderPath, setFolderPath] = useState(null);
-  const { eventname, categoryname, setStatus, status } =
+  const { eventname, categoryname, setStatus, status, eventId, subId, eventsid, subeventsid } =
     useContext(PortfolioContext);
 
   const { uploadVideoState, updateUploadVideoState, videoStatus } =
@@ -20,7 +21,7 @@ const [open, setOpen] = useState(false);
 
 
   const handleStart = async () => {
-    const selected = await window.electronAPI.selectFolder();
+    const selected = await window.electronAPI?.selectFolder();
     if (!selected) return;
     setFolderPath(selected);
     if (selected === folderPath) {
@@ -29,11 +30,24 @@ const [open, setOpen] = useState(false);
     }
 
     await startUpload(selected, updateUploadState, setStatus);
+
+    const resolvedEventId    = typeof eventId === "object" ? eventId?.value : (eventId || eventsid);
+    const resolvedSubeventId = typeof subId === "object" ? subId?.value : (subId || subeventsid);
+    if (resolvedEventId && resolvedSubeventId) {
+      bgWatcherService.add({
+        folderPath:   selected,
+        eventId:      resolvedEventId,
+        subeventId:   resolvedSubeventId,
+        eventName:    eventname    || "",
+        categoryName: categoryname || "",
+        role:         "photographer",
+      });
+    }
   };
 
   // video slected
   const handleSelectFolder = async () => {
-    const selected = await window.electronAPI.selectVideoFolder();
+    const selected = await window.electronAPI?.selectVideoFolder();
     if (!selected) return;
 
     if (selected === uploadVideoState.folderPath) {

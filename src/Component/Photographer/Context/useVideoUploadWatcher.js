@@ -50,7 +50,7 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
   /* ================= TOTAL ================= */
 
   useEffect(() => {
-    if (!folderPath) return;
+    if (!folderPath || !window.electronAPI) return;
 
     processedRef.current.clear();
     setVideoTotal(0);
@@ -59,8 +59,8 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
     setVideoDuplicate(0);
 
     const h = (c) => setVideoTotal(c);
-    window.electronAPI.onTotalVideoCount(h);
-    return () => window.electronAPI.offTotalVideoCount(h);
+    const unsub = window.electronAPI?.onTotalVideoCount(h);
+    return () => unsub?.();
   }, [folderPath]);
 
   /* ================= COUNTERS ================= */
@@ -74,13 +74,13 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
   /* ================= START ================= */
 
   useEffect(() => {
-    if (!folderPath || !resolvedEventId || !resolvedSubEventId) return;
+    if (!folderPath || !resolvedEventId || !resolvedSubEventId || !window.electronAPI) return;
 
     (async () => {
       setVideoStatus("loading");
       updateUploadVideoState({ isUploading: true });
 
-      const list = await window.electronAPI.readVideoFolder(folderPath);
+      const list = await window.electronAPI?.readVideoFolder(folderPath);
 
       const prepared = list.map((v) => ({
         id: v.path,
@@ -91,7 +91,7 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
       }));
 
       setVideos(prepared);
-      await window.electronAPI.compressVideosParallel(
+      await window.electronAPI?.compressVideosParallel(
         prepared.map((v) => v.originalPath),
       );
     })();
@@ -129,6 +129,8 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
   /* ================= COMPRESSED EVENT ================= */
 
   useEffect(() => {
+    if (!window.electronAPI) return;
+
     const handler = (file) => {
       if (processedRef.current.has(file.path)) return;
       processedRef.current.add(file.path);
@@ -138,11 +140,11 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
       );
 
       uploadQueueRef.current.push(file);
-      runNextUpload(); // 🚀 IMMEDIATE UPLOAD
+      runNextUpload();
     };
 
-    window.electronAPI.onCompressedVideo(handler);
-    return () => window.electronAPI.offCompressedVideo(handler);
+    const unsub = window.electronAPI?.onCompressedVideo(handler);
+    return () => unsub?.();
   }, []);
 
   /* ================= UPLOAD ================= */
@@ -163,10 +165,10 @@ export const useVideoUploadWatcher = ({ folderPath }) => {
       if (signed.status === 409) return markDuplicate(file);
       if (signed.status !== 200) return markFailed(file);
 
-      const buffer = await window.electronAPI.readFileBuffervideo(file.path);
+      const buffer = await window.electronAPI?.readFileBuffervideo(file.path);
 
       await axios.put(signed.data.signedUrl, buffer, {
-        headers: { "Content-Type": "video/mp4" },
+        headers: { "Content-Type": file.type },
       });
 
       await axios.post(

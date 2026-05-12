@@ -4,18 +4,23 @@ import { startUpload } from "../Context/UploadHelper";
 import { useImageUploadWatcher } from "../Context/useImageUploadWatcher";
 import DriveFolderUploadIcon from "@mui/icons-material/DriveFolderUpload";
 import { toast } from "react-toastify";
+import { bgWatcherService } from "../../../services/bgWatcherService";
 
 function SyncPhotos() {
   // const [syncStatus, setSyncStatus] = useState("idle");
   const { uploadState, updateUploadState } = useContext(PortfolioContext);
   const [folderPath, setFolderPath] = useState(null);
-  const {   
-    setStart,   
-    setBack,   
+  const {
+    setStart,
+    setBack,
     eventname,
     categoryname,
     setStatus,
     status,
+    eventId,
+    subId,
+    eventsid,
+    subeventsid,
   } = useContext(PortfolioContext);
 
   // useImageUploadWatcher({
@@ -27,8 +32,8 @@ function SyncPhotos() {
 
   // const handleStart = async () => {
   //   try {
-  //     const selected = await window.electronAPI.selectFolderupload();
-  //     // const selected = await window.electronAPI.selectFolder();
+  //     const selected = await window.electronAPI?.selectFolderupload();
+  //     // const selected = await window.electronAPI?.selectFolder();
   //     if (!selected) return;
   //     setFolderPath(selected);
 
@@ -47,16 +52,32 @@ function SyncPhotos() {
   //   }
   // };
   const handleStart = async () => {
-      const selected = await window.electronAPI.selectFolder();
-      if (!selected) return;
-      setFolderPath(selected);
-            if (selected === folderPath) {
-        toast.info("You've already selected this folder.");
-        return;
-      }
-  
-      await startUpload(selected, updateUploadState, setStatus);
-    };
+    const selected = await window.electronAPI?.selectFolder();
+    if (!selected) return;
+    setFolderPath(selected);
+
+    if (selected === folderPath) {
+      toast.info("You've already selected this folder.");
+      return;
+    }
+
+    await startUpload(selected, updateUploadState, setStatus);
+
+    // Register with the persistent background watcher so new photos uploaded
+    // to this folder are synced even after this session ends or the window closes
+    const resolvedEventId   = typeof eventId === "object" ? eventId?.value : (eventId || eventsid);
+    const resolvedSubeventId = typeof subId === "object" ? subId?.value : (subId || subeventsid);
+    if (resolvedEventId && resolvedSubeventId) {
+      bgWatcherService.add({
+        folderPath:   selected,
+        eventId:      resolvedEventId,
+        subeventId:   resolvedSubeventId,
+        eventName:    eventname   || "",
+        categoryName: categoryname || "",
+        role:         "org",
+      });
+    }
+  };
 
     return (
     <>

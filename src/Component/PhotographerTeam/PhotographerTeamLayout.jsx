@@ -70,10 +70,10 @@ function PhotographerTeamLayout() {
   } = useContext(UploadVideoContext);
 
   const cleanupUploads = () => {
-    window.electronAPI.cancelUploadProcessing();
-    window.electronAPI.deleteCompressed();
-    window.electronAPI.stopWatchingFolder?.();
-    window.electronAPI.removeListeners?.();
+    window.electronAPI?.cancelUploadProcessing();
+    window.electronAPI?.deleteCompressed();
+    window.electronAPI?.stopWatchingFolder?.();
+    window.electronAPI?.removeListeners?.();
   };
 
   useEffect(() => {
@@ -126,14 +126,14 @@ function PhotographerTeamLayout() {
         setTotal(0);
         setUploaded(0);
         setDuplicate(0);
-        window.electronAPI.deleteFolder(compressedFolder);
+        window.electronAPI?.deleteFolder(compressedFolder);
       }
     });
   };
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const data = await window.electronAPI.getSystemStats();
+      const data = await window.electronAPI?.getSystemStats();
       setStats(data);
     }, 1000);
 
@@ -142,7 +142,7 @@ function PhotographerTeamLayout() {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const speed = await window.electronAPI.getNetworkSpeed();
+      const speed = await window.electronAPI?.getNetworkSpeed();
       setNetworkSpeed(speed);
     }, 1000);
 
@@ -169,10 +169,10 @@ function PhotographerTeamLayout() {
     setFailed(0);
     // setHasStarted(false);
     setStatus("completed");
-    // window.electronAPI.cancelUploadProcessing();
-    // window.electronAPI.deleteCompressed();
-    // window.electronAPI.stopWatchingFolder?.();
-    // window.electronAPI.removeListeners?.();
+    // window.electronAPI?.cancelUploadProcessing();
+    // window.electronAPI?.deleteCompressed();
+    // window.electronAPI?.stopWatchingFolder?.();
+    // window.electronAPI?.removeListeners?.();
     cleanupUploads();
     setEventsid("");
     setSubeventsid("");
@@ -191,7 +191,7 @@ function PhotographerTeamLayout() {
         setTotal(0);
         setUploaded(0);
         setDuplicate(0);
-        window.electronAPI.deleteFolder(compressedFolder);
+        window.electronAPI?.deleteFolder(compressedFolder);
         setOpensnak(true);
       }, 2000);
     }
@@ -234,8 +234,8 @@ function PhotographerTeamLayout() {
         setVideoUploaded(0);
         setVideoStatus("idle");       
         setVideos([]);
-        window.electronAPI.deleteFolder(compressedFolder);
-        window.electronAPI.cancelVideoCompress();
+        window.electronAPI?.deleteFolder(compressedFolder);
+        window.electronAPI?.cancelVideoCompress();
         setVideoFailed(0);
         setOpensnak(true);
       }, 2000);
@@ -254,8 +254,8 @@ function PhotographerTeamLayout() {
     }).then((result) => {
       if (result.isConfirmed) {
         const compressedFolder = `${uploadVideoState.folderPath}/compressed`;
-        window.electronAPI.deleteFolder(compressedFolder);
-        window.electronAPI.cancelVideoCompress();
+        window.electronAPI?.deleteFolder(compressedFolder);
+        window.electronAPI?.cancelVideoCompress();
         setVideoStatus("completed");
         setUploadVideoState({ folderPath: null });
         setEventid("");

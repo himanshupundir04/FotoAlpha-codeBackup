@@ -105,9 +105,9 @@ function SyncPhotos() {
           ),
         }))
       );
-      window.electronAPI.setStore("syncphotos", serializablePhotos);
+      window.electronAPI?.setStore("syncphotos", serializablePhotos);
     } catch (error) {
-      const cachedSummary = await window.electronAPI.getStore("syncphotos");
+      const cachedSummary = await window.electronAPI?.getStore("syncphotos");
       if (cachedSummary) {
         setTableData(cachedSummary);
         // console.log(cachedSummary);
@@ -116,7 +116,7 @@ function SyncPhotos() {
   };
 
   const handleSelectFolder = async () => {
-    const selected = await window.electronAPI.selectFolder();
+    const selected = await window.electronAPI?.selectFolder();
     if (!selected) return;
     setFolderPath(selected);
 

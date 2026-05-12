@@ -46,11 +46,11 @@ function Event() {
       setLoading(false);
       setEvent(response.data.events);
       setPagination(response.data.pagination);
-      window.electronAPI.setStore("Events", response.data.events);
+      window.electronAPI?.setStore("Events", response.data.events);
       // console.log(response.data.events);
     } catch (error) {
       setLoading(false);
-      const cachedSummary = await window.electronAPI.getStore("Events");
+      const cachedSummary = await window.electronAPI?.getStore("Events");
       if (cachedSummary) {
         setEvent(cachedSummary);
         // console.log(cachedSummary);

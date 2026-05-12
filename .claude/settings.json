@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm show *)",
+      "Bash(node -e \"const es = require\\('/home/msbi/FotoAlpha Workspace/FotoAlpha-codeBackup/node_modules/eslint-config-react-app/package.json'\\); console.log\\('eslint-config-react-app version:', es.version\\);\")",
+      "Bash(node -e \"const pkg = require\\('/home/msbi/FotoAlpha Workspace/FotoAlpha-codeBackup/node_modules/dotenv/package.json'\\); console.log\\('dotenv version:', pkg.version\\);\")",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}

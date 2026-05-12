@@ -80,10 +80,10 @@ export default function PublicCalendar() {
       // console.log(response.data)
       setLoading(false)
       setEvents(fetchedEvents);
-       window.electronAPI.setStore("calendar", fetchedEvents);
+       window.electronAPI?.setStore("calendar", fetchedEvents);
     } catch (error) {
       setLoading(false)
-       const cachedSummary = await window.electronAPI.getStore("calendar");
+       const cachedSummary = await window.electronAPI?.getStore("calendar");
       if (cachedSummary) {
         setEvents(cachedSummary);
         // console.log(cachedSummary);

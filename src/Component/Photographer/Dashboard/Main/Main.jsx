@@ -12,6 +12,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import BoltIcon from "@mui/icons-material/Bolt";
 import { Box, CircularProgress } from "@mui/material";
+import { formatFileSize } from "../../../Common/utils";
 import CloseIcon from "@mui/icons-material/Close";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import {
@@ -232,15 +233,6 @@ function Main() {
     navigate(`/photographer/search/${searchTerm}`);
   };
 
-  function formatFileSize(bytes) {
-    if (!bytes || isNaN(bytes)) return "0 B";
-
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    const size = bytes / Math.pow(1024, i);
-
-    return `${size.toFixed(2)} ${sizes[i]}`;
-  }
 
   const today = startOfDay(new Date());
   const nextSevenDays = Array.from({ length: 7 }, (_, i) => {

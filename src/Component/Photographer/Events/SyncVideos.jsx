@@ -88,7 +88,7 @@ function SyncVideos({ videoUploadMode, setVideoUploadMode }) {
   };
 
   const handleSelectFolder = async () => {
-    const selected = await window.electronAPI.selectVideoFolder();
+    const selected = await window.electronAPI?.selectVideoFolder();
     if (!selected) return;
 
     if (selected === uploadVideoState.folderPath) {

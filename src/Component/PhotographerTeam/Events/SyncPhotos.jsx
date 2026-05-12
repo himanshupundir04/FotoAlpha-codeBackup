@@ -215,7 +215,7 @@ function SyncPhotos() {
   // UPLOAD
   // -------------------------
   const handleSelectFolder = async () => {
-    const selected = await window.electronAPI.selectFolder();
+    const selected = await window.electronAPI?.selectFolder();
     if (!selected) return;
     setFolderPath(selected);
 

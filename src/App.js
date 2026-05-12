@@ -57,6 +57,7 @@ import OrganizationBilling from "./Component/Organization/Billing/Billing"
 import OrganizationCoinsPage from "./Component/Organization/Coins/CoinsPage";
 import OrganizationReferralDashboard from "./Component/Organization/Referrals/ReferralDashboard";
 import OrganizationSubCategory from "./Component/Organization/UploadPhotos/SubCategory";
+import ActiveWatchers from "./Component/Common/ActiveWatchers";
 import OrganizationAlbumimg from "./Component/Organization/Album/Albumimg";
 import OrganizationUpgradePlan from "./Component/Organization/Dashboard/UpgradePlan/UpgradePlan";
 import OrganizationEventLists from "./Component/Organization/Events/EventLists";
@@ -238,6 +239,10 @@ function App() {
           path: "settings",
           element: <Settings />,
         },
+        {
+          path: "sync_watchers",
+          element: <ActiveWatchers />,
+        },
       ],
     },
      {
@@ -361,6 +366,10 @@ function App() {
         {
           path: "settings",
           element: <OrganizationSettings />,
+        },
+        {
+          path: "sync_watchers",
+          element: <ActiveWatchers />,
         },
       ],
     },

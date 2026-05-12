@@ -81,9 +81,9 @@ function SingleEvent() {
       setPortfolioEvent(response.data.event);
       setEvent(response.data.event);
       // console.log(response.data.event);
-       window.electronAPI.setStore("singleEvent", response.data.event);
+       window.electronAPI?.setStore("singleEvent", response.data.event);
     } catch (error) {
-      const cachedSummary = await window.electronAPI.getStore("singleEvent");
+      const cachedSummary = await window.electronAPI?.getStore("singleEvent");
       if (cachedSummary) {
         setEvent(cachedSummary);
         setPortfolioEvent(cachedSummary);
