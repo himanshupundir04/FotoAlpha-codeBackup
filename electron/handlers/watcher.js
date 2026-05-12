@@ -4,10 +4,11 @@ const fs = require("fs");
 const chokidar = require("chokidar");
 const sharp = require("sharp");
 const os = require("os");
-const {
-  getSentImages,
-  getImageHash,
-} = require("../utils/files");
+const { getImageHash } = require("../utils/files");
+
+function db() {
+  return require("../database/db");
+}
 
 const IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png"];
 const DEBOUNCE_MS = 2000;
@@ -116,7 +117,7 @@ function createFolderCompressor(event, suffix) {
           try {
             const ext = path.extname(filePath).toLowerCase();
             const hash = await getImageHash(filePath);
-            const sentHashes = getSentImages().map((entry) => entry.hash);
+            const sentHashes = db().getAllUploaded().map((entry) => entry.hash);
             const outputPath = path.join(outputDir,
               ext === ".webp"
                 ? path.basename(filePath)
@@ -129,7 +130,7 @@ function createFolderCompressor(event, suffix) {
                 path: outputPath,
                 size: stats.size,
                 lastModified: stats.mtime,
-                type: "webp",
+                type: "image/webp",
                 hash,
               };
             }
@@ -141,7 +142,7 @@ function createFolderCompressor(event, suffix) {
               path: outputPath,
               size: stats.size,
               lastModified: stats.mtime,
-              type: "webp",
+              type: "image/webp",
               hash,
             };
           } catch (err) {
@@ -226,7 +227,7 @@ function createImageWatcher(event, suffix) {
           }
 
           const hash = await getImageHash(filePath);
-          const sentHashes = getSentImages().map((entry) => entry.hash);
+          const sentHashes = db().getAllUploaded().map((entry) => entry.hash);
 
           if (sentHashes.includes(hash)) {
             return;
@@ -245,7 +246,7 @@ function createImageWatcher(event, suffix) {
             path: outputPath,
             size: stats.size,
             lastModified: stats.mtime,
-            type: "webp",
+            type: "image/webp",
             hash,
           };
           safeSend(event, channelNewImage, imageMeta);

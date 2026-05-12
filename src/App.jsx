@@ -1,7 +1,30 @@
 import "./App.css";
 import { createHashRouter, RouterProvider } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const currentUser = users.find((u) => u.isCurrent);
+      if (currentUser) {
+        const remaining = users.filter((u) => u._id !== currentUser._id);
+        localStorage.setItem("users", JSON.stringify(remaining));
+      }
+      localStorage.removeItem("token");
+      localStorage.removeItem("avatar");
+      toast.error("You have been logged out. Please sign in again.", {
+        toastId: "auth-expired",
+      });
+      window.location.hash = "/";
+    }
+    return Promise.reject(error);
+  }
+);
 import Login from "./Component/login/Login";
 import Register from "./Component/Register/Register";
 import Verify from "./Component/Register/Verify/Verify";

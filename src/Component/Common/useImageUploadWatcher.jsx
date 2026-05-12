@@ -26,10 +26,12 @@ export const useImageUploadWatcher = ({
   const activeUploadsRef = useRef(0);
   const stoppedRef = useRef(false);
   const uploadLimitReached = useRef(false);
+  const failedFileIdsRef = useRef(new Set());
 
   const onTotalImageCountRef = useRef(null);
   const onCompressedFileReadyRef = useRef(null);
   const onNewImageDetectedRef = useRef(null);
+  const onWatcherErrorRef = useRef(null);
 
   const cleanupListeners = useCallback(() => {
     if (onTotalImageCountRef.current) {
@@ -43,6 +45,10 @@ export const useImageUploadWatcher = ({
     if (onNewImageDetectedRef.current) {
       onNewImageDetectedRef.current();
       onNewImageDetectedRef.current = null;
+    }
+    if (onWatcherErrorRef.current) {
+      onWatcherErrorRef.current();
+      onWatcherErrorRef.current = null;
     }
     window.electronAPI?.removeListeners?.();
   }, []);
@@ -61,6 +67,7 @@ export const useImageUploadWatcher = ({
     queueRef.current = [];
     activeUploadsRef.current = 0;
     stoppedRef.current = false;
+    failedFileIdsRef.current.clear();
 
     setUploaded?.(0);
     setDuplicate?.(0);
@@ -98,9 +105,15 @@ export const useImageUploadWatcher = ({
     }
   };
 
+  const handleWatcherError = useCallback(({ filePath, message }) => {
+    console.error(`[Compression Error] ${filePath}:`, message);
+    failedRef.current++;
+    setFailed?.(failedRef.current);
+  }, [setFailed]);
+
   const uploadSingle = async (file) => {
     try {
-      await desktopUploadService.uploadFile({
+      const result = await desktopUploadService.uploadFile({
         filePath: file.path,
         fileName: file.name,
         fileType: file.type,
@@ -109,6 +122,9 @@ export const useImageUploadWatcher = ({
         eventId: eventId?.value || eventsid,
         subeventId: subeventId || subeventsid,
       });
+      if (result === null) {
+        markFailedOnce(file);
+      }
     } catch (err) {
       markFailedOnce(file);
     }
@@ -123,7 +139,9 @@ export const useImageUploadWatcher = ({
     });
 
     const unsubError = desktopUploadService.onError((events) => {
-      events.forEach(() => {
+      events.forEach((data) => {
+        if (data.fileId && failedFileIdsRef.current.has(data.fileId)) return;
+        if (data.fileId) failedFileIdsRef.current.add(data.fileId);
         failedRef.current++;
         setFailed?.(failedRef.current);
         checkCompletion();
@@ -180,6 +198,7 @@ export const useImageUploadWatcher = ({
         uploadedRef.current = 0;
         failedRef.current = 0;
         duplicateRef.current = 0;
+        failedFileIdsRef.current.clear();
         setUploaded?.(0);
         setDuplicate?.(0);
         setFailed?.(0);
@@ -194,6 +213,7 @@ export const useImageUploadWatcher = ({
     onTotalImageCountRef.current = window.electronAPI?.onTotalImageCount(handleTotalImageCount) ?? null;
     onCompressedFileReadyRef.current = window.electronAPI?.onCompressedFileReady(handleCompressedFileReady) ?? null;
     onNewImageDetectedRef.current = window.electronAPI?.onNewImageDetected(handleNewImageDetected) ?? null;
+    onWatcherErrorRef.current = window.electronAPI?.onWatcherError(handleWatcherError) ?? null;
 
     window.electronAPI?.watchFolder(folderPath);
     window.electronAPI?.compressAndReadFolder(folderPath);

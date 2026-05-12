@@ -2,13 +2,11 @@
   "name": "fotoalpha",
   "version": "0.1.5",
   "main": "electron/main.js",
+  "author": {
+    "name": "FotoAlpha",
+    "email": "info@ankittyagi.in"
+  },
   "private": true,
-  "files": [
-    "electron/**/*",
-    "build/**/*",
-    "public/**/*",
-    "package.json"
-  ],
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -16,16 +14,11 @@
     "@mui/material": "^7.0.2",
     "@mui/x-charts": "^7.28.0",
     "@reduxjs/toolkit": "^2.6.1",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
     "axios": "^1.10.0",
     "better-sqlite3": "^9.6.0",
     "blueimp-load-image": "^5.16.0",
     "browser-image-compression": "^2.0.2",
     "chokidar": "^4.0.3",
-    "cross-env": "^7.0.3",
     "date-fns": "^4.1.0",
     "electron-store": "^10.1.0",
     "formik": "^2.4.6",
@@ -60,6 +53,10 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0",
     "@vitejs/plugin-react": "^4.7.0",
     "concurrently": "^9.1.2",
     "electron": "^25.9.8",

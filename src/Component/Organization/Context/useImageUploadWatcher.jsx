@@ -10,7 +10,7 @@ export const useImageUploadWatcher = ({ folderPath, updateUploadState }) => {
     setTotal: ctx.setTotal,
     setUploaded: ctx.setUploaded,
     setDuplicate: ctx.setDuplicate,
-    setFailed: undefined,
+    setFailed: ctx.setFailed,
     setHasStarted: ctx.setHasStarted,
     setStatus: ctx.setStatus,
     eventId: ctx.eventId,
