@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import TablePagination from "@mui/material/TablePagination";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import axios from "axios";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import BoltIcon from "@mui/icons-material/Bolt";
@@ -24,7 +25,7 @@ function Event() {
   const [searchTerm, setSearchTerm] = useState("");
   const id = useLocation().pathname.split("/")[3];
   const [permission, setPermission] = useState(false);
-  const {setPhotoCount} = useContext(PhotographerEventContext)
+  const {setPhotoCount, categoryname} = useContext(PhotographerEventContext)
 
   useEffect(() => {
     fetchEvents();
@@ -188,34 +189,50 @@ function Event() {
         </div>
       ) : (
         <section>
-          <div className="flex justify-between items-center flex-wrap md:flex-nowrap">
-            <ArrowBackIcon
-              sx={{ fontSize: "30px" }}
-              className="bg-slate-300 p-1 rounded text-white cursor-pointer"
-              onClick={handleBack}
-            />
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+            <button
+              onClick={() => navigate("/photographer/events_category")}
+              className="hover:text-cyan-600 transition-colors flex items-center gap-1"
+            >
+              <ArrowBackIcon sx={{ fontSize: 16 }} />
+              Event Categories
+            </button>
+            <ChevronRightIcon sx={{ fontSize: 16 }} className="text-slate-300" />
+            <span className="text-slate-800 dark:text-white font-medium capitalize">
+              {categoryname || "Events"}
+            </span>
           </div>
-          <>
-            {event && event?.length > 0 ? (
-              <>
-                <div className="flex justify-between items-center">
-                  <div className="flex bg-white py-2 px-2 rounded-md w-full md:w-[25%] mt-5 dark:bg-slate-800">
-                    <SearchIcon className="text-slate-400 dark:text-gray-400 mr-2 cursor-pointer" onClick={performSearch} />
-                    <input
-                      type="text"
-                      placeholder="Search events by name...."
-                      onChange={handlesearchChange}
-                      onKeyDown={handleSearchKeyDown}
-                      className="border-none text-sm outline-none bg-transparent w-full dark:text-white placeholder-gray-400"
-                    />
-                  </div>
-                  <button
-                    className="bg-blue text-white md:px-3 md:py-2 px-2 py-1 text-sm rounded-md font-normal hover:bg-blueHover"
-                    onClick={() => fetchGuar()}
-                  >
-                    <AddIcon sx={{ fontSize: "18px" }} /> Create Event
-                  </button>
-                </div>
+
+          {/* Header + Search + Create */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800 dark:text-white capitalize">
+                {categoryname || "Events"}
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                {pagination?.total || 0} {pagination?.total === 1 ? "event" : "events"} in this category
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-white py-2 px-2 rounded-md w-full md:w-[25%] dark:bg-slate-800">
+                <SearchIcon className="text-slate-400 dark:text-gray-400 mr-2 cursor-pointer" onClick={performSearch} />
+                <input
+                  type="text"
+                  placeholder="Search events by name...."
+                  onChange={handlesearchChange}
+                  onKeyDown={handleSearchKeyDown}
+                  className="border-none text-sm outline-none bg-transparent w-full dark:text-white placeholder-gray-400"
+                />
+              </div>
+              <button
+                className="bg-blue text-white md:px-3 md:py-2 px-2 py-1 text-sm rounded-md font-normal hover:bg-blueHover"
+                onClick={() => fetchGuar()}
+              >
+                <AddIcon sx={{ fontSize: "18px" }} /> Create Event
+              </button>
+            </div>
+          </div>
                 <div className="">
                   {event && event.length > 0 ? (
                     <>
@@ -319,29 +336,7 @@ function Event() {
                     }}
                   />
                 </div> */}
-              </>
-            ) : (
-              <>
-                <div className="flex flex-col justify-center items-center w-full col-span-3 mt-10">
-                  <ErrorOutlineIcon
-                    sx={{ fontSize: 50 }}
-                    className="text-slate-400"
-                  />
-                  <p className="text-xl text-slate-600 dark:text-white">
-                    No events to show
-                  </p>
-                </div>
-                <div className="flex justify-center items-center flex-wrap md:flex-nowrap mt-2">
-                  <button
-                    className="bg-blue w-36 text-white md:px-3 md:py-2 px-2 py-1 text-sm rounded-md font-normal hover:bg-blueHover"
-                    onClick={() => navigate("create_event")}
-                  >
-                    Create Event
-                  </button>
-                </div>
-              </>
-            )}
-          </>
+          </div>
         </section>
       )}
     </>

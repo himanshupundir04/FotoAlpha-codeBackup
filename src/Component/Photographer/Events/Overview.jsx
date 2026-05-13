@@ -19,6 +19,7 @@ import XIcon from "@mui/icons-material/X";
 import { PortfolioEventContext } from "../Context/PortfolioEventContext";
 import PeopleIcon from "@mui/icons-material/People";
 import axios from "axios";
+import { showConfirmDialog } from "../../../services/confirmDialog";
 
 const baseurl = import.meta.env.VITE_BASE_URL;
 const baseurlFront = import.meta.env.VITE_FRONT_BASE_URL;
@@ -35,7 +36,7 @@ const style = {
   boxShadow: 24,
 };
 function Oveview() {
-  const { portfolioevent } = useContext(PortfolioEventContext);
+  const { portfolioevent, setPortfolioEvent } = useContext(PortfolioEventContext);
  const { eventid } = useParams();
   const qrCodeRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -46,17 +47,9 @@ function Oveview() {
   const navigate = useNavigate();
   const [team, setTeam] = useState([]);
   const [expanded, setExpanded] = useState(false);
-  const [eventStatus, setEventStatus] = useState(portfolioevent?.status || "upcoming");
-  const [showStatusModal, setShowStatusModal] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [cancellingEvent, setCancellingEvent] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [statusSeverity, setStatusSeverity] = useState("success");
-
-  useEffect(() => {
-    if (portfolioevent?.status) {
-      setEventStatus(portfolioevent.status);
-    }
-  }, [portfolioevent]);
 
   useEffect(() => {
     fetchTeam();
@@ -212,27 +205,54 @@ function Oveview() {
     );
   };
 
-  const handleStatusChange = async (newStatus) => {
-    setUpdatingStatus(true);
+  const computedStatus = portfolioevent?.computedStatus || portfolioevent?.status || "upcoming";
+
+  const deriveComputedStatus = (timeSlots, dbStatus) => {
+    if (dbStatus === "cancelled") return "cancelled";
+    const slots = (timeSlots || []).filter(s => s.date);
+    if (slots.length === 0) return "upcoming";
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayTs = today.getTime();
+    const ts = slots.map(s => { const d = new Date(s.date); d.setHours(0, 0, 0, 0); return d.getTime(); });
+    const min = Math.min(...ts);
+    const max = Math.max(...ts);
+    if (max < todayTs) return "completed";
+    if (min <= todayTs) return "ongoing";
+    return "upcoming";
+  };
+
+  const handleCancelToggle = async () => {
+    const isCancelled = computedStatus === "cancelled";
+    const newStatus = isCancelled ? "upcoming" : "cancelled";
+
+    const confirmed = await showConfirmDialog({
+      title: isCancelled ? "Reactivate this event?" : "Cancel this event?",
+      description: isCancelled
+        ? "The event will become active again and guests will be able to access it."
+        : "Guests will immediately lose access. You can reactivate this event at any time.",
+      confirmText: isCancelled ? "Reactivate" : "Cancel Event",
+      variant: isCancelled ? "success" : "danger",
+    });
+
+    if (!confirmed.isConfirmed) return;
+
+    setCancellingEvent(true);
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `${baseurl}/events/${eventid}/status`,
         { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-      setEventStatus(newStatus);
-      setStatusMessage(`Event status updated to ${newStatus}!`);
+      const newComputed = deriveComputedStatus(portfolioevent?.timeSlots, newStatus);
+      setPortfolioEvent(prev => ({ ...prev, status: newStatus, computedStatus: newComputed }));
+      setStatusMessage(newStatus === "cancelled" ? "Event cancelled." : "Event reactivated.");
       setStatusSeverity("success");
-      setShowStatusModal(false);
     } catch (error) {
-      setStatusMessage(error.response?.data?.message || "Failed to update status");
+      setStatusMessage(error.response?.data?.message || "Failed to update status.");
       setStatusSeverity("error");
     } finally {
-      setUpdatingStatus(false);
+      setCancellingEvent(false);
     }
   };
 
@@ -263,14 +283,21 @@ function Oveview() {
                 </h2>
                 <div className="flex gap-2 items-center">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize cursor-pointer hover:opacity-80 transition ${getStatusColor(
-                      eventStatus
-                    )}`}
-                    onClick={() => setShowStatusModal(true)}
-                    title="Click to change status"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold capitalize ${getStatusColor(computedStatus)}`}
                   >
-                    {eventStatus}
+                    {computedStatus}
                   </span>
+                  <button
+                    onClick={handleCancelToggle}
+                    disabled={cancellingEvent}
+                    className={`py-1 px-3 text-xs rounded-lg font-medium border transition
+                      ${computedStatus === "cancelled"
+                        ? "border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20"
+                        : "border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      }`}
+                  >
+                    {computedStatus === "cancelled" ? "Reactivate" : "Cancel Event"}
+                  </button>
                   <button
                     className="bg-transparent flex gap-1 items-center text-slate-700 py-1 px-2 text-sm rounded-lg font-normal border-slate-300 border dark:border-slate-600 dark:text-white "
                     onClick={() => navigate("edit_event")}
@@ -549,47 +576,7 @@ function Oveview() {
               Copied !
             </Alert>
           </Snackbar>
-          {/* Status Change Modal */}
-          <Modal
-            open={showStatusModal}
-            onClose={() => setShowStatusModal(false)}
-            aria-labelledby="status-modal-title"
-          >
-            <Box sx={style}>
-              <div className="bg-white rounded dark:bg-slate-800 p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-slate-700 dark:text-white">
-                    Change Event Status
-                  </h2>
-                  <CloseIcon
-                    className="text-slate-700 cursor-pointer dark:text-white"
-                    onClick={() => setShowStatusModal(false)}
-                  />
-                </div>
-                <p className="text-slate-600 dark:text-slate-400 mb-4">
-                  Current Status: <span className="font-semibold capitalize">{eventStatus}</span>
-                </p>
-                <div className="space-y-2">
-                  {["upcoming", "ongoing", "completed", "cancelled"].map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => handleStatusChange(status)}
-                      disabled={updatingStatus || status === eventStatus}
-                      className={`w-full px-4 py-2 rounded font-medium text-sm transition capitalize
-                        ${
-                          status === eventStatus
-                            ? "bg-gray-50 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400"
-                            : `${getStatusColor(status)} border border-current hover:opacity-80`
-                        }`}
-                    >
-                      {status}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </Box>
-          </Modal>
-          {/* Status Message Snackbar */}
+          {/* Cancel action feedback */}
           <Snackbar
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
             open={!!statusMessage}

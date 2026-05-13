@@ -37,7 +37,7 @@ function EventLists() {
   const [status, setStatus] = useState(type || ""); 
   const { setPortfolioEvent } = useContext(PortfolioEventContext); 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 12;
 
   useEffect(() => {
     fetchAllevent("", "", "", status);
@@ -46,9 +46,9 @@ function EventLists() {
   const handleSearchText = () => {
     setCurrentPage(1);
     if (searchText.trim() === "") {
-      fetchAllevent(fromDate, toDate);
+      fetchAllevent(fromDate, toDate, "", status);
     } else {
-      fetchAllevent(fromDate, toDate, searchText);
+      fetchAllevent(fromDate, toDate, searchText, status);
     }
   };
 
@@ -112,9 +112,10 @@ function EventLists() {
             category: ev?.eventCategoryId?.name,
 
             startDate: currentSlot?.date,
-            eventSubCategory: currentSlot?.eventSubCategory?.name, // subcategory of active slot
+            eventSubCategory: currentSlot?.eventSubCategory?.name,
             eventid: ev?._id,
             status: ev?.status,
+            computedStatus: ev?.computedStatus || ev?.status || "upcoming",
             description: ev?.description,
             slotsCount: ev?.timeSlots?.length || 0,
             slotTime: currentSlot?.slotTime,
@@ -149,7 +150,7 @@ function EventLists() {
       toast.warning("Please select a date range", { autoClose: 1500 });
       return;
     }
-    fetchAllevent(fromDate, toDate);
+    fetchAllevent(fromDate, toDate, "", status);
   };
 
   const handleEdit = (data) => {
@@ -291,16 +292,138 @@ function EventLists() {
       </style>
       <div className="  text-start">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
+                  <h2 className="text-base font-semibold text-slate-800 dark:text-white">
                     All Events
                   </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     {data.length} {data.length === 1 ? "event" : "events"} found
                   </p>
+                </div>
+                <button
+                  onClick={() => navigate("/photographer/create_event")}
+                  className="inline-flex items-center px-3 py-1.5 bg-blue hover:bg-blueHover text-white text-xs font-medium rounded-lg transition-colors duration-200 whitespace-nowrap"
+                >
+                  <AddIcon className="w-4 h-4 mr-1" />
+                  Create Event
+                </button>
+              </div>
+
+            </div>
+          </div>
+          <div className="">
+            <>
+                <div className="flex flex-col lg:flex-row justify-between items-center mt-1 px-4 gap-1.5">
+                  <div className="flex flex-wrap items-center gap-2 border border-slate-100 p-1 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 dark:border-slate-700">
+                    <p className="text-slate-500 font-medium text-xs ml-1.5 dark:text-slate-400">From</p>
+                    <input
+                      type="date"
+                      name="from"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                      className="border border-slate-200 outline-none w-full md:w-max rounded-xl px-2 py-1 text-xs text-slate-600 focus:border-[#0b8599] transition-colors"
+                    />
+                    <p className="text-slate-500 font-medium text-xs px-0.5 dark:text-slate-400">To</p>
+                    <input
+                      type="date"
+                      name="to"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                      className="border border-slate-200 outline-none w-full md:w-max rounded-xl px-2 py-1 text-xs text-slate-600 focus:border-[#0b8599] transition-colors"
+                    />
+                    <button
+                      className="bg-[#0b8599] px-3 py-1 text-white w-[100%] md:w-max font-semibold text-xs hover:bg-[#086a7a] rounded-xl shadow-sm transition-colors"
+                      onClick={handleDateSearch}
+                    >
+                      Search
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div className="px-1.5 py-1 border w-full md:w-max border-slate-200 dark:border-slate-600 rounded-full bg-white">
+                      <select className="text-xs text-slate-600 w-full md:w-max outline-none bg-transparent"
+                        value={status}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setStatus(value);
+                          setCurrentPage(1);
+                          fetchAllevent(fromDate, toDate, searchText, value);
+                        }}
+                      >
+                        <option value="">All</option>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </div>
+                    <div className="relative flex w-full md:w-[120px]">
+                      <div className="flex items-center gap-1.5 w-full px-3 py-1 border border-slate-200 dark:border-slate-600 rounded-full bg-white dark:bg-slate-800 text-slate-600 focus-within:border-[#0b8599] transition-colors shadow-sm">
+                        <input
+                          type="text"
+                          placeholder="Search events..."
+                          value={searchText}
+                          name="search"
+                          onChange={(e) => setSearchText(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSearchText()}
+                          className="w-full outline-none text-xs bg-transparent"
+                        />
+                        <SearchIcon
+                          onClick={handleSearchText}
+                          fontSize="small"
+                          className="text-[#0b8599] cursor-pointer hover:text-[#086a7a]"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleClear}
+                      className="border border-[#4fb5c4] text-[#4fb5c4] hover:bg-[#4fb5c4]/5 rounded-full px-3 py-1 font-medium text-xs transition-colors shadow-sm"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      onClick={() => {
+                        const csvContent = [
+                          ["Event Name", "Category", "Sub Event", "Date"],
+                          ...events.map((event) => [
+                            event.eventName,
+                            event.category,
+                            event.eventSubCategory,
+                            format(new Date(event.startDate), "MMM dd yyyy"),
+                          ]),
+                        ].map((row) => row.join(",")).join("\n");
+
+                        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = `events-${new Date().toISOString().split("T")[0]}.csv`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }}
+                      className="inline-flex items-center px-3 py-1 border border-slate-200 rounded-full text-slate-600 text-xs font-medium bg-white hover:bg-slate-50 transition-colors shadow-sm"
+                      title="Download CSV"
+                    >
+                      <svg
+                        className="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      CSV
+                    </button>
+                  </div>
                 </div>
                 <button
                   onClick={() => navigate("/photographer/create_event")}
@@ -314,171 +437,7 @@ function EventLists() {
             </div>
           </div>
           <div className="">
-            {data.length === 0 ? (
-              <div className="flex items-center justify-center min-h-[500px] p-8">
-                <div className="w-full max-w-2xl">
-                  {/* Gradient Card Container */}
-                  <div className="bg-gradient-to-br from-blue/5 via-white to-cyan-400/5 dark:from-slate-800/50 dark:via-slate-900 dark:to-slate-800/50 rounded-2xl p-12 border border-blue/10 dark:border-slate-700/50 shadow-xl">
-                    {/* Icon Container */}
-                    <div className="flex justify-center mb-6">
-                      <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue to-cyan-400 rounded-full blur opacity-20"></div>
-                        <div className="relative inline-flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-br from-blue/20 to-cyan-400/20 border border-blue/30">
-                          <svg
-                            className="w-12 h-12 text-blue"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Heading */}
-                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white text-center mb-3">
-                      No Events Yet
-                    </h2>
-
-                    {/* Subheading */}
-                    <p className="text-lg text-slate-700 dark:text-slate-300 text-center mb-2 font-medium">
-                      Start Your Journey
-                    </p>
-
-                    {/* Description */}
-                    <p className="text-base text-slate-600 dark:text-slate-400 text-center mb-10 leading-relaxed max-w-lg mx-auto">
-                      You haven't created any events yet. Create your first
-                      event to start showcasing your photography work and
-                      attract clients.
-                    </p>
-
-                    {/* Features Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-                      <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50 text-center hover:border-blue/30 dark:hover:border-blue/30 transition-colors">
-                        <svg
-                          className="w-6 h-6 text-blue mx-auto mb-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                        <p className="text-sm font-semibold text-slate-700 dark:text-white">
-                          Fast Setup
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                          Create in minutes
-                        </p>
-                      </div>
-                      <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50 text-center hover:border-blue/30 dark:hover:border-blue/30 transition-colors">
-                        <svg
-                          className="w-6 h-6 text-cyan-400 mx-auto mb-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <p className="text-sm font-semibold text-slate-700 dark:text-white">
-                          Attract Clients
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                          Get more bookings
-                        </p>
-                      </div>
-                      <div className="bg-white dark:bg-slate-800/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700/50 text-center hover:border-blue/30 dark:hover:border-blue/30 transition-colors">
-                        <svg
-                          className="w-6 h-6 text-green-500 mx-auto mb-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        <p className="text-sm font-semibold text-slate-700 dark:text-white">
-                          Easy Management
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                          Full control & analytics
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Primary CTA Button */}
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <button
-                        onClick={() => navigate("/photographer/create_event")}
-                        className="flex-1 sm:flex-none bg-gradient-to-r from-blue to-cyan-400 hover:from-blue/90 hover:to-cyan-400/90 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        Create Your First Event
-                      </button>
-                      <button
-                        onClick={() =>
-                          navigate("/photographer/events_category")
-                        }
-                        className="flex-1 sm:flex-none border-2 border-blue text-blue hover:bg-blue/5 dark:hover:bg-blue/10 dark:text-cyan-400 dark:border-cyan-400 font-semibold py-3 px-8 rounded-lg transition duration-300 flex items-center justify-center gap-2"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                          />
-                        </svg>
-                        Browse Categories
-                      </button>
-                    </div>
-
-                    {/* Secondary text */}
-                    <p className="text-xs text-slate-500 dark:text-slate-400 text-center mt-6">
-                      💡 Tip: Start with a category like Wedding, Portrait, or
-                      Corporate to organize your work
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <>
+            <>
                 <div className="flex flex-col lg:flex-row justify-between items-center mt-2 px-6 gap-4">
                   <div className="flex flex-wrap items-center gap-3 border border-slate-100 p-1.5 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 dark:border-slate-700">
                     <p className="text-slate-500 font-medium text-sm ml-2 dark:text-slate-400">From</p>
@@ -582,56 +541,75 @@ function EventLists() {
                     </button>
                   </div>
                 </div>
-                <div className="mt-6 px-6 space-y-3 pb-4">
+                {data.length === 0 ? (
+                  <div className="flex items-center justify-center h-48">
+                    <p className="text-slate-500 dark:text-slate-400">No events found{status ? ' for "' + status + '"' : ""}</p>
+                  </div>
+                ) : (
+                  <>
+                  <div className="mt-4 px-4 space-y-2 pb-3">
                   {currentItems.map((event, index) => (
-                    <div key={index} className="bg-white rounded-2xl p-3 flex flex-col md:flex-row items-center justify-between shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05),0_4px_12px_-2px_rgba(0,0,0,0.02)] border border-slate-100 dark:bg-slate-800 dark:border-slate-700 transition-all hover:shadow-md cursor-pointer" onClick={() => navigate(`/photographer/event/${event.eventid}`)}>
+                    <div key={index} className={`bg-white rounded-xl p-2 flex flex-col md:flex-row items-center justify-between shadow-[0_1px_4px_-2px_rgba(0,0,0,0.05),0_2px_8px_-1px_rgba(0,0,0,0.02)] border border-slate-100 dark:bg-slate-800 dark:border-slate-700 transition-all hover:shadow-md cursor-pointer border-l-4 ${
+                        event.computedStatus === "ongoing"
+                          ? "border-l-green-500"
+                          : event.computedStatus === "upcoming"
+                            ? "border-l-blue-500"
+                            : event.computedStatus === "cancelled"
+                              ? "border-l-red-400"
+                              : "border-l-slate-300"
+                      }`} onClick={() => navigate(`/photographer/event/${event.eventid}`)}>
                       {/* Left & Middle: Image and Details */}
-                      <div className="flex flex-col md:flex-row items-center gap-5 w-full md:w-auto flex-1">
+                      <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto flex-1">
                         {/* Image Thumbnail */}
-                        <div className="w-full md:w-24 h-24 flex-shrink-0">
+                        <div className="w-full md:w-16 h-16 flex-shrink-0">
                           <img
                             src={event.firstPhoto || demo}
                             alt={event.eventName}
-                            className="w-full h-full object-cover rounded-xl shadow-sm"
+                            className="w-full h-full object-cover rounded-lg shadow-sm"
                           />
                         </div>
 
                         {/* Details */}
-                        <div className="flex flex-col text-center md:text-left mt-2 md:mt-0 flex-1">
-                          <p className="text-[10px] font-bold tracking-widest text-[#4fb5c4] uppercase mb-1">
+                        <div className="flex flex-col text-center md:text-left mt-1 md:mt-0 flex-1 min-w-0">
+                          <p className="text-[8px] font-bold tracking-widest text-[#4fb5c4] uppercase mb-0.5">
                             {event.category || "UNCATEGORIZED"}
                           </p>
-                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-white leading-tight">
+                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5 mb-1">
+                            <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-tight truncate max-w-[200px]">
                               {event.eventName}
                             </h3>
-                            {event.status && (
-                              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wide mt-0.5 ${event.status.toLowerCase() === 'upcoming' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400' :
-                                event.status.toLowerCase() === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400' :
-                                  'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
-                                }`}>
-                                {event.status}
+                            {event.computedStatus && (
+                              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wide ${
+                                event.computedStatus === "ongoing"
+                                  ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-400"
+                                  : event.computedStatus === "upcoming"
+                                    ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400"
+                                    : event.computedStatus === "cancelled"
+                                      ? "bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400"
+                                      : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+                              }`}>
+                                {event.computedStatus}
                               </span>
                             )}
                           </div>
 
                           {event.description && (
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 line-clamp-1 max-w-sm">
+                            <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-1 line-clamp-1 max-w-sm">
                               {event.description}
                             </p>
                           )}
 
-                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-[12px] text-slate-500 dark:text-slate-400 font-medium mt-auto">
-                            <div className="flex items-center gap-1.5">
-                              <CalendarTodayOutlinedIcon className="w-3.5 h-3.5" fontSize="small" />
+                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-auto">
+                            <div className="flex items-center gap-1">
+                              <CalendarTodayOutlinedIcon className="w-3 h-3" fontSize="small" />
                               <span>
                                 {event.startDate ? format(new Date(event.startDate), "MMM dd, yyyy") : "Date N/A"}
                                 {event.slotTime && <span className="ml-1 text-[#4fb5c4] font-bold">({event.slotTime})</span>}
                               </span>
                             </div>
                             {event.slotsCount > 0 && (
-                              <div className="flex items-center gap-1.5 opacity-80">
-                                <AccessTimeOutlinedIcon className="w-3.5 h-3.5" fontSize="small" />
+                              <div className="flex items-center gap-1 opacity-80">
+                                <AccessTimeOutlinedIcon className="w-3 h-3" fontSize="small" />
                                 <span>{event.slotsCount} Session{event.slotsCount !== 1 ? 's' : ''}</span>
                               </div>
                             )}
@@ -640,40 +618,40 @@ function EventLists() {
                       </div>
 
                       {/* Right Side: Phase & Actions */}
-                      <div className="flex flex-col md:flex-row items-center gap-6 mt-4 md:mt-0">
+                      <div className="flex flex-col md:flex-row items-center gap-4 mt-2 md:mt-0">
                         {/* Current Phase */}
-                        <div className="flex flex-col items-center mr-4">
-                          <span className="text-[9px] font-bold tracking-wider text-slate-400 uppercase mb-1">
-                            CURRENT PHASE
-                          </span>
-                          <div className="bg-[#ebf8f9] text-[#4fb5c4] px-4 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide">
-                            {event.eventSubCategory || "INITIAL"}
+                          <div className="flex flex-col items-center mr-3">
+                            <span className="text-[8px] font-bold tracking-wider text-slate-500 uppercase mb-0.5">
+                              CURRENT PHASE
+                            </span>
+                            <div className="bg-[#d4f0f4] text-[#0b8599] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm">
+                              {event.eventSubCategory || "INITIAL"}
+                            </div>
                           </div>
-                        </div>
 
                         {/* Action Buttons */}
-                        <div className="flex items-center gap-2.5">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); navigate(`/photographer/event/${event.eventid}`); }}
-                            className="p-2 text-slate-400 hover:text-blue hover:border-blue hover:bg-blue/5 transition-all bg-white"
-                            title="View Details"
-                          >
-                            <VisibilityOutlinedIcon sx={{ fontSize: 18 }} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleEdit(event.eventid); }}
-                            className="p-2 text-slate-400 hover:text-green-600 hover:border-green-600 hover:bg-green-50 transition-all bg-white"
-                            title="Edit Event"
-                          >
-                            <EditOutlinedIcon sx={{ fontSize: 18 }} />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleDeleteEvent(event.eventid); }}
-                            className="p-2 text-slate-400 hover:text-red-500 hover:border-red-500 hover:bg-red-50 transition-all bg-white"
-                            title="Delete Event"
-                          >
-                            <DeleteOutlineIcon sx={{ fontSize: 18 }} />
-                          </button>
+                        <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(`/photographer/event/${event.eventid}`); }}
+                              className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-all bg-white rounded-lg"
+                              title="View Details"
+                            >
+                              <VisibilityOutlinedIcon sx={{ fontSize: 16 }} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleEdit(event.eventid); }}
+                              className="p-1.5 text-amber-500 hover:text-amber-700 hover:bg-amber-50 transition-all bg-white rounded-lg"
+                              title="Edit Event"
+                            >
+                              <EditOutlinedIcon sx={{ fontSize: 16 }} />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleDeleteEvent(event.eventid); }}
+                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 transition-all bg-white rounded-lg"
+                              title="Delete Event"
+                            >
+                              <DeleteOutlineIcon sx={{ fontSize: 16 }} />
+                            </button>
                         </div>
                       </div>
                     </div>
@@ -682,11 +660,11 @@ function EventLists() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-4 mb-8">
+                  <div className="flex justify-center items-center gap-1 mt-3 mb-6">
                     <button
                       onClick={() => paginate(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="p-2 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
+                      className="p-1.5 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
                     >
                       <ChevronLeftIcon fontSize="small" />
                     </button>
@@ -695,7 +673,7 @@ function EventLists() {
                       <button
                         key={i + 1}
                         onClick={() => paginate(i + 1)}
-                        className={`w-9 h-9 rounded-md text-sm font-medium transition-all ${currentPage === i + 1
+                        className={`w-7 h-7 rounded-md text-xs font-medium transition-all ${currentPage === i + 1
                           ? "bg-[#0b8599] text-white shadow-md shadow-[#0b8599]/30 border border-transparent"
                           : "border border-slate-200 text-slate-600 hover:bg-slate-50 bg-white"
                           }`}
@@ -707,14 +685,15 @@ function EventLists() {
                     <button
                       onClick={() => paginate(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="p-2 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
+                      className="p-1.5 rounded-md border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-white"
                     >
                       <ChevronRightIcon fontSize="small" />
                     </button>
                   </div>
                 )}
+                </>
+              )}
               </>
-            )}
           </div>
         </div>
       </div>
