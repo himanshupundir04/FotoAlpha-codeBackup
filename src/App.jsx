@@ -105,8 +105,14 @@ import EventLists from "./Component/Photographer/Events/EventLists";
 import CreateEvent from "./Component/Photographer/UploadPhotos/CreateEvent";
 import NotFound from "./Component/login/NotFound";
 import PhotoVideo from "./Component/Photographer/Events/PhotoVideo";
+import { useEffect } from "react";
+import { desktopUploadService } from "./services/desktopUploadService";
 
 function App() {
+  useEffect(() => {
+    desktopUploadService.init();
+    desktopUploadService.resumePendingUploads();
+  }, []);
   const router = createHashRouter([
     {
       path: "/",

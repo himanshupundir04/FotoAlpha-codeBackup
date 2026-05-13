@@ -85,10 +85,14 @@ function WatcherCard({ watcher, onRemove, recentActivity }) {
       </div>
 
       {/* Stats row */}
-      <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-3 grid grid-cols-4 gap-2 text-center">
         <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-2">
           <p className="text-green-600 font-bold text-lg leading-none">{watcher.totalUploaded}</p>
           <p className="text-xs text-green-600 mt-0.5">Uploaded</p>
+        </div>
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-2">
+          <p className="text-blue-600 font-bold text-lg leading-none">{watcher.totalPending ?? 0}</p>
+          <p className="text-xs text-blue-600 mt-0.5">Pending</p>
         </div>
         <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-2">
           <p className="text-yellow-600 font-bold text-lg leading-none">{watcher.totalDuplicate}</p>

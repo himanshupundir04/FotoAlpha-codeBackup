@@ -1,5 +1,30 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
+
+const startHidden = process.argv.includes("--hidden");
+
+function setupLinuxAutostart() {
+  try {
+    const autostartDir = path.join(os.homedir(), ".config", "autostart");
+    const desktopFile = path.join(autostartDir, "fotoalpha.desktop");
+    if (!fs.existsSync(autostartDir)) {
+      fs.mkdirSync(autostartDir, { recursive: true });
+    }
+    const content = [
+      "[Desktop Entry]",
+      "Type=Application",
+      "Name=FotoAlpha",
+      `Exec=${process.execPath} --hidden`,
+      "NoDisplay=false",
+      "X-GNOME-Autostart-enabled=true",
+      "Comment=FotoAlpha photo sync",
+    ].join("\n") + "\n";
+    fs.writeFileSync(desktopFile, content);
+  } catch (_) {}
+}
+
 const {
   registerStoreHandlers,
 } = require("./handlers/store");
@@ -55,10 +80,11 @@ ipcMain.handle("tray:update-pending-count", async (_event, count) => {
 });
 
 app.whenReady().then(async () => {
-  app.setLoginItemSettings({
-    openAtLogin: true,
-    path: process.execPath,
-  });
+  if (process.platform === "win32" || process.platform === "darwin") {
+    app.setLoginItemSettings({ openAtLogin: true, path: process.execPath });
+  } else if (process.platform === "linux" && app.isPackaged) {
+    setupLinuxAutostart();
+  }
 
   await createWindow();
   createTray(mainWindow);
@@ -73,6 +99,7 @@ async function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
+    show: !startHidden,
     icon: path.join(__dirname, "..", "public", "Camera.ico"),
     webPreferences: {
       preload:          path.join(__dirname, "preload.js"),

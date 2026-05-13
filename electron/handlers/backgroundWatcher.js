@@ -277,6 +277,74 @@ function startWatcher(folderRecord) {
 
   activeWatchers.set(folderPath, { watcher: fw, pendingTimers });
   safeSend("bgwatcher:started", { folderPath });
+
+  scanFolderForPending({
+    folderPath,
+    outputDir,
+    queue,
+    drainQueue,
+    recentlyProcessed,
+  }).catch((err) => {
+    safeSend("bgwatcher:error", { folderPath, error: `Initial scan failed: ${err.message}` });
+  });
+}
+
+async function scanFolderForPending({ folderPath, outputDir, queue, drainQueue, recentlyProcessed }) {
+  let entries;
+  try {
+    entries = fs.readdirSync(folderPath);
+  } catch {
+    return;
+  }
+
+  for (const name of entries) {
+    if (!activeWatchers.has(folderPath)) return;
+
+    const ext = path.extname(name).toLowerCase();
+    if (!IMAGE_EXTENSIONS.includes(ext)) continue;
+
+    const filePath = path.join(folderPath, name);
+    if (recentlyProcessed.has(filePath)) continue;
+
+    try {
+      const stat = fs.statSync(filePath);
+      if (!stat.isFile()) continue;
+
+      const hash = await hashFile(filePath);
+
+      if (isUploaded(hash)) continue;
+
+      recentlyProcessed.add(filePath);
+
+      if (!fs.existsSync(outputDir)) {
+        try { fs.mkdirSync(outputDir, { recursive: true }); } catch {}
+      }
+
+      const compressedPath = await compressToWebp(filePath, outputDir);
+      queue.push({ compressedPath, hash, fileName: path.basename(compressedPath) });
+      drainQueue();
+
+      safeSend("bgwatcher:new-file", { folderPath, fileName: name });
+    } catch (err) {
+      incrementFolderStats(folderPath, { failed: 1 });
+      safeSend("bgwatcher:error", { folderPath, fileName: name, error: err.message });
+    }
+  }
+}
+
+function countFolderImages(folderPath) {
+  try {
+    if (!fs.existsSync(folderPath)) return 0;
+    const entries = fs.readdirSync(folderPath);
+    let n = 0;
+    for (const name of entries) {
+      const ext = path.extname(name).toLowerCase();
+      if (IMAGE_EXTENSIONS.includes(ext)) n++;
+    }
+    return n;
+  } catch {
+    return 0;
+  }
 }
 
 function stopWatcher(folderPath) {
@@ -300,19 +368,27 @@ function restoreWatchers() {
 }
 
 function buildWatcherList() {
-  return getActiveWatchedFolders().map((r) => ({
-    folderPath:     r.folder_path,
-    eventId:        r.event_id,
-    subeventId:     r.subevent_id,
-    eventName:      r.event_name,
-    categoryName:   r.category_name,
-    role:           r.role,
-    totalUploaded:  r.total_uploaded,
-    totalFailed:    r.total_failed,
-    totalDuplicate: r.total_duplicate,
-    lastSynced:     r.last_synced,
-    isRunning:      activeWatchers.has(r.folder_path),
-  }));
+  return getActiveWatchedFolders().map((r) => {
+    const folderPath = r.folder_path;
+    const totalInFolder = countFolderImages(folderPath);
+    const processed = (r.total_uploaded || 0) + (r.total_duplicate || 0) + (r.total_failed || 0);
+    const totalPending = Math.max(0, totalInFolder - processed);
+    return {
+      folderPath,
+      eventId:        r.event_id,
+      subeventId:     r.subevent_id,
+      eventName:      r.event_name,
+      categoryName:   r.category_name,
+      role:           r.role,
+      totalUploaded:  r.total_uploaded,
+      totalFailed:    r.total_failed,
+      totalDuplicate: r.total_duplicate,
+      totalPending,
+      totalInFolder,
+      lastSynced:     r.last_synced,
+      isRunning:      activeWatchers.has(folderPath),
+    };
+  });
 }
 
 // ── IPC handlers ─────────────────────────────────────────────────

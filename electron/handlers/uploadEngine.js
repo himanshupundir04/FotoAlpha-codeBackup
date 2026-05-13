@@ -2,6 +2,7 @@ const { ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
+const { markUploaded } = require("../database/db");
 
 const CHUNK_SIZE = 5 * 1024 * 1024;
 const MAX_CHUNK_SIZE = 10 * 1024 * 1024;
@@ -208,6 +209,9 @@ async function uploadFileMain(event, { filePath: fp, apiUrl, token, eventId, sub
         { headers: { Authorization: `Bearer ${token}` }, signal: abortController.signal }
       );
       activeUploads.delete(fileId);
+      if (fileHash) {
+        try { markUploaded(fileHash, uploadState.fileName, eventId, subeventId); } catch {}
+      }
       sender.send("upload:complete", { fileId, sessionId, fileName: uploadState.fileName });
     } catch (err) {
       activeUploads.delete(fileId);
@@ -271,6 +275,9 @@ async function uploadFileMain(event, { filePath: fp, apiUrl, token, eventId, sub
               { headers: { Authorization: `Bearer ${token}` }, signal: abortController.signal }
             );
             activeUploads.delete(fileId);
+            if (fileHash) {
+              try { markUploaded(fileHash, uploadState.fileName, eventId, subeventId); } catch {}
+            }
             sender.send("upload:complete", { fileId, sessionId, fileName: uploadState.fileName });
           } catch (err) {
             activeUploads.delete(fileId);
