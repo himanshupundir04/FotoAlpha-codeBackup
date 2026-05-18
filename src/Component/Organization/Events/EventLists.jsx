@@ -11,7 +11,7 @@ import axios from "axios";
 import demo from "../../image/demo.jpg";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { PortfolioEventContext } from "../Context/PortfolioEventContext";
-import Swal from "sweetalert2";
+import ConfirmModal from "../../Common/ConfirmModal";
 import { format } from "date-fns";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -26,6 +26,7 @@ function EventLists() {
   const [searchText, setSearchText] = useState("");
   const [status, setStatus] = useState("");
   const { setPortfolioEvent } = useContext(PortfolioEventContext);
+  const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
 
   useEffect(() => {
     fetchAllevent("", "", "", status);
@@ -257,38 +258,31 @@ function EventLists() {
   ];
 
   const handleDeleteEvent = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You are about to delete this event. All associated data and photos will also be permanently deleted. This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`${baseUrl}/events/${id}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "ngrok-skip-browser-warning": "69420",
-            },
-          })
+    setDeleteModal({ open: true, id });
+  };
 
-          .then(() => {
-            toast.success("Event and all related data deleted successfully", {
-              autoClose: 1200,
-            });
-            fetchAllevent();
-          })
-          .catch((err) => {
-            toast.error(err?.response?.data?.message || err?.message, {
-              autoClose: 2000,
-            });
-            console.log(err);
-          });
-      }
-    });
+  const confirmDelete = () => {
+    const id = deleteModal.id;
+    setDeleteModal({ open: false, id: null });
+    axios
+      .delete(`${baseUrl}/events/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "ngrok-skip-browser-warning": "69420",
+        },
+      })
+      .then(() => {
+        toast.success("Event and all related data deleted successfully", {
+          autoClose: 1200,
+        });
+        fetchAllevent();
+      })
+      .catch((err) => {
+        toast.error(err?.response?.data?.message || err?.message, {
+          autoClose: 2000,
+        });
+        console.log(err);
+      });
   };
 
   if (loading) {
@@ -597,6 +591,15 @@ function EventLists() {
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false, id: null })}
+        onConfirm={confirmDelete}
+        title="Are you sure?"
+        description="You are about to delete this event. All associated data and photos will also be permanently deleted. This action cannot be undone!"
+        confirmText="Yes, Delete"
+        cancelText="Go back"
+      />
     </>
   );
 }

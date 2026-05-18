@@ -40,6 +40,7 @@ import CreateEvents from "./Component/Photographer/Events/CreateEvents";
 import EditEvents from "./Component/Photographer/Events/EditEvents";
 import PhotographerEvents from "./Component/Photographer/Events/Event";
 import PhotographerSingleEvent from "./Component/Photographer/Events/SingleEvent";
+import SubEventPhotos from "./Component/Photographer/Events/SubEventPhotos";
 import PhotographerAccount from "./Component/Photographer/Myaccount/Account";
 import Publicview from "./Component/Photographer/Portfolio/Publicview";
 import Calendar from "./Component/Photographer/Calendar/Calendar";
@@ -66,6 +67,7 @@ import OrganizationCreateEvents from "./Component/Organization/Events/CreateEven
 import OrganizationEditEvents from "./Component/Organization/Events/EditEvents";
 import OrganizationEvents from "./Component/Organization/Events/Event";
 import OrganizationSingleEvent from "./Component/Organization/Events/SingleEvent";
+import OrganizationSubEventPhotos from "./Component/Organization/Events/SubEventPhotos";
 import OrganizationAccount from "./Component/Organization/Myaccount/Account";
 import OrganizationPublicview from "./Component/Organization/Portfolio/Publicview";
 import OrganizationCalendar from "./Component/Organization/Calendar/Calendar";
@@ -96,6 +98,7 @@ import PhotographerTeamCalendar from "./Component/PhotographerTeam/Calendar/Cale
 import PhotographerTeamSettings from "./Component/PhotographerTeam/Settings/Settings";
 import PhotographerPhotos from "./Component/PhotographerTeam/Events/Photos";
 import PhotographerTeamSyncPhotos from "./Component/PhotographerTeam/Events/SyncPhotos";
+import UploadPhotos from "./Component/Photographer/UploadPhotos/UploadPhotos";
 import Events from "./Component/Photographer/UploadPhotos/Events";
 import SubCategory from "./Component/Photographer/UploadPhotos/SubCategory";
 import Albumimg from "./Component/Photographer/Album/Albumimg";
@@ -201,6 +204,10 @@ function App() {
           element: <SyncPhotos/>,
         },
         {
+          path: "event/:eventId/subevent/:subeventId/photos",
+          element: <SubEventPhotos />,
+        },
+        {
           path: "event/:id/Payment_management",
           element: <PaymentManagement />,
         },
@@ -226,7 +233,7 @@ function App() {
         },
         {
           path: "upload_photos",
-          element: <Events />,
+          element: <UploadPhotos />,
         },
         {
           path: "upload_photos/:id",
@@ -335,6 +342,10 @@ function App() {
         {
           path: "event/:eventId/subevent/:subeventId/sync_photos",
           element: <OrganizationSyncPhotos />,
+        },
+        {
+          path: "event/:eventId/subevent/:subeventId/photos",
+          element: <OrganizationSubEventPhotos />,
         },
         {
           path: "event/:id/Payment_management",

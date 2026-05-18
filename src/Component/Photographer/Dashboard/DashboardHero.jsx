@@ -1,63 +1,45 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 
 const DashboardHero = ({
   profileName,
-  searchTerm,
-  onSearchChange,
-  onSearchSubmit,
   createEventPath = "/photographer/create_event",
   uploadPath = "/photographer/upload_photo",
 }) => {
   const navigate = useNavigate();
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      onSearchSubmit();
-    }
-  };
-
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
-      <div>
+    <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 bg-gradient-to-br from-blue/5 via-white to-cyan-400/5 dark:from-slate-800/50 dark:via-slate-900 dark:to-slate-800/50 rounded-xl p-4 border border-blue/10 dark:border-slate-700/50 overflow-hidden">
+      <div className="relative z-10">
         <h1 className="text-xl font-bold text-slate-800 dark:text-white">
           Welcome back{profileName ? `, ${profileName}` : ""}!
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Here's what's happening with your photography business today.
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-lg">
+          Manage your events, uploads, guests, and sales from one place.
         </p>
-      </div>
-      <div className="flex gap-2 items-center flex-wrap">
-        <div className="flex bg-white py-2 px-3 dark:bg-slate-800 rounded-md min-w-[180px]">
-          <SearchIcon
-            className="text-slate-400 dark:text-white cursor-pointer"
-            onClick={onSearchSubmit}
-          />
-          <input
-            type="text"
-            placeholder="Search events..."
-            value={searchTerm}
-            onChange={onSearchChange}
-            onKeyDown={handleKeyDown}
-            className="w-full text-sm ms-1 border-none outline-none bg-transparent dark:text-white"
-          />
+        <div className="flex gap-2 mt-3">
+          <button
+            onClick={() => navigate(createEventPath)}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] text-white text-xs font-semibold py-1.5 px-3 rounded-lg hover:from-[#1D4ED8] hover:to-[#2563EB] transition shadow-sm"
+          >
+            <AddIcon sx={{ fontSize: 16 }} /> Create Event
+          </button>
+          <button
+            onClick={() => navigate(uploadPath)}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#7C3AED] to-[#A855F7] text-white text-xs font-semibold py-1.5 px-3 rounded-lg hover:from-[#6D28D9] hover:to-[#7C3AED] transition shadow-sm"
+          >
+            <CloudUploadOutlinedIcon sx={{ fontSize: 16 }} /> Upload Photos
+          </button>
         </div>
-        <button
-          onClick={() => navigate(createEventPath)}
-          className="flex items-center gap-1 bg-blue text-white text-xs font-semibold py-2 px-3 rounded-lg hover:bg-blue-700 transition"
-        >
-          <AddIcon sx={{ fontSize: 16 }} /> Create Event
-        </button>
-        <button
-          onClick={() => navigate(uploadPath)}
-          className="flex items-center gap-1 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white text-xs font-semibold py-2 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-        >
-          <CloudUploadOutlinedIcon sx={{ fontSize: 16 }} /> Upload Photos
-        </button>
+      </div>
+      <div className="relative z-10 hidden md:block">
+        <img
+          alt="logo"
+          class="max-w-[10vw] w-full h-auto"
+          src="/src/Component/image/welcome_img.png"
+        />
       </div>
     </div>
   );

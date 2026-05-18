@@ -57,7 +57,7 @@ function Photos() {
                   key={index}
                             className="group overflow-hidden relative rounded-xl bg-white dark:bg-slate-800 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer "
                   onClick={() =>
-                    navigate(`subevent/${cat.eventSubCategory.id}/sync_photos`)
+                    navigate(`/photographer/event/${eventid}/subevent/${cat.eventSubCategory.id}/photos`)
                   }
                 >
                   <div className="overflow-hidden relative rounded-t-xl h-40">

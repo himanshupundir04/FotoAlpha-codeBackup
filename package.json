@@ -75,16 +75,15 @@
     "electron:wait": "wait-on http://localhost:3000 && npm run electron",
     "clean": "rimraf release-builds",
     "clean:cache": "rimraf node_modules/.cache && rimraf ~/.cache/electron-builder && rimraf ~/.cache/electron",
-    "dist:win": "npm run build && electron-builder --win nsis",
-    "dist:fast": "npm run build && electron-builder --win --dir",
-    "dist:linux": "npm run build && electron-builder --linux",
-    "dist:linux:fast": "npm run build && electron-builder --linux --dir",
+    "dist:win": "npm install --platform=win32 --arch=x64 --legacy-peer-deps sharp better-sqlite3 && npm run build && electron-builder --win nsis",
+    "dist:fast": "npm install --platform=win32 --arch=x64 --legacy-peer-deps sharp better-sqlite3 && npm run build && electron-builder --win --dir",
+    "dist:linux": "npm install --platform=linux --arch=x64 --legacy-peer-deps sharp better-sqlite3 && npm run build && electron-builder --linux",
+    "dist:linux:fast": "npm install --platform=linux --arch=x64 --legacy-peer-deps sharp better-sqlite3 && npm run build && electron-builder --linux --dir",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
     "compression": "store",
-    "npmRebuild": false,
-    "buildDependenciesFromSource": false,
+    "npmRebuild": true,
     "appId": "com.fotoalpha.app",
     "productName": "FotoAlpha",
     "directories": {

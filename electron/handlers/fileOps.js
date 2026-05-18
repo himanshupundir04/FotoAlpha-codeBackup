@@ -66,6 +66,21 @@ function registerFileOpHandlers() {
     return fs.existsSync(filePath);
   });
 
+  ipcMain.handle("read-folder", async (_event, folderPath) => {
+    if (!isValidPath(folderPath)) return [];
+    if (!fs.existsSync(folderPath)) return [];
+    try {
+      const entries = fs.readdirSync(folderPath, { withFileTypes: true });
+      return entries.map((entry) => ({
+        name: entry.name,
+        path: path.join(folderPath, entry.name),
+        isDirectory: entry.isDirectory(),
+      }));
+    } catch {
+      return [];
+    }
+  });
+
   ipcMain.handle("delete-file", async (_event, filePath) => {
     if (!isValidPath(filePath)) return;
     try {

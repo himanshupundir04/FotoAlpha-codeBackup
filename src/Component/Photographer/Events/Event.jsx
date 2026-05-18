@@ -318,25 +318,6 @@ function Event() {
                     </div>
                   )}
                 </div>
-                {/* <div className="mt-5 col-span-3">
-                  <TablePagination
-                    component="div"
-                    count={pagination.total}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    rowsPerPageOptions={[10, 15, 20, 50, 100]}
-                    showLastButton
-                    className="bg-white text-black dark:bg-slate-800 dark:text-white"
-                    sx={{
-                      "& .MuiTablePagination-actions svg": {
-                        color: "black", // light mode
-                      },
-                    }}
-                  />
-                </div> */}
-          </div>
         </section>
       )}
     </>

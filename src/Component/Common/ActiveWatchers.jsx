@@ -8,8 +8,8 @@ import DeleteOutlineIcon     from "@mui/icons-material/DeleteOutline";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import RefreshIcon           from "@mui/icons-material/Refresh";
 import { CircularProgress, Tooltip } from "@mui/material";
-import Swal from "sweetalert2";
 import { bgWatcherService } from "../../services/bgWatcherService";
+import { showConfirmDialog } from "../../services/confirmDialog";
 
 const POLL_INTERVAL_MS = 5000;
 
@@ -185,14 +185,12 @@ export default function ActiveWatchers() {
   }, [fetchList]);
 
   const handleRemove = async (folderPath) => {
-    const result = await Swal.fire({
-      title:             "Stop watching this folder?",
-      text:              "The watcher will be removed. Photos already uploaded will remain.",
-      icon:              "warning",
-      showCancelButton:  true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor:  "#d33",
-      confirmButtonText: "Yes, stop it",
+    const result = await showConfirmDialog({
+      title: "Stop watching this folder?",
+      description: "The watcher will be removed. Photos already uploaded will remain.",
+      confirmText: "Yes, stop it",
+      cancelText: "Go back",
+      variant: "danger",
     });
 
     if (result.isConfirmed) {
